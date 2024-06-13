@@ -47,7 +47,7 @@ body {
     background: white;
     height: 670px;
     position: fixed;
-    margin-left:230px;
+    margin-left: 230px;
     margin-top: 100px;
     box-shadow: -10px 10px 10px rgba(45, 194, 77, 0.5);
     border-radius: 10px;
@@ -62,16 +62,16 @@ body {
     height: 450px;
     margin-top: 200px;
     margin-left: 780px;
-}   
+}
 
 
-@media only screen and (max-width:413px) and (max-height:915px){
+@media only screen and (max-width:413px) and (max-height:915px) {
     div.block1 {
-    width:50%;
-    height:45%;
-    margin-left:0px;
-    margin-top:100px;
-  
+        width: 50%;
+        height: 45%;
+        margin-left: 0px;
+        margin-top: 100px;
+
 
     }
 }
@@ -91,23 +91,26 @@ ul#menu {
     font-weight: bold;
 }
 
-@media only screen and (max-width:413px) and (max-height:915px){
-    ul#menu
-    {
-        margin-left:0px;
-        width:100%;
-        margin-top:0px;
-        
+@media only screen and (max-width:413px) and (max-height:915px) {
+    ul#menu {
+        margin-left: 0px;
+        width: 100%;
+        margin-top: 0px;
+
+        height: 100px;
+
     }
 
-    #menu li{
-        display:inline-block;
-        width:20%;
-        height:30%;
-        padding-right:10px;
-        font-size:15px;
+    #menu li {
+        display: inline-block;
+        width: 20%;
+        height: 30%;
+        padding-right: 10px;
+        font-size: 12px;
+
     }
 }
+
 li a {
     display: block;
     color: #000;
@@ -176,13 +179,12 @@ li a:hover:not(.active) {
     display: flex;
     flex-direction: row;
 }
-@media only screen and (max-width:413px) and (max-height:915px){
-.block2{
-    margin-top:500px;
-}
-.hidden{
-    position:static;
-}
+
+@media only screen and (max-width:413px) and (max-height:915px) {
+ .block2{
+    margin-top:180%;
+ }
+
 }
 
 .padding-20 {
@@ -289,20 +291,20 @@ div .color-1:hover {
     0% {
         opacity: 0;
         left: -120px;
-        
+
     }
 
     100% {
         opacity: 1;
         left: 50px;
-        
+
     }
 }
 
 .show {
     z-index: -1;
     display: block;
-   
+
     -webkit-animation-duration: 2s;
     animation-duration: 2s;
 
@@ -313,12 +315,12 @@ div .color-1:hover {
     animation-name: fadeIn;
 }
 
-ul#knowledge{
-    list-style:none;
-    
+ul#knowledge {
+    list-style: none;
+
 }
 
-ul#knowledge li:before{
+ul#knowledge li:before {
     content: '\2713';
     color: #006769;
     padding-right: 10px;
@@ -327,16 +329,16 @@ ul#knowledge li:before{
     line-height: 1.2;
 }
 
-#knowledge li{  
-   font-size: 16px;
+#knowledge li {
+    font-size: 16px;
 }
 
-ul#expertise{
-    list-style:none;
-    
+ul#expertise {
+    list-style: none;
+
 }
 
-ul#expertise li:before{
+ul#expertise li:before {
     content: '\2713';
     color: #006769;
     padding-right: 10px;
@@ -345,23 +347,24 @@ ul#expertise li:before{
     line-height: 1.2;
 }
 
-#expertise li{  
-   font-size: 16px;
+#expertise li {
+    font-size: 16px;
 }
 
-.no-padding{
-    margin-top:-20px;
+.no-padding {
+    margin-top: -20px;
 }
 
-.flex2{
-    flex:2;
+.flex2 {
+    flex: 2;
 }
 
-.flex-direc{
-    flex-direction:column;
+.flex-direc {
+    flex-direction: column;
 }
 
-input[type=text], select {
+input[type=text],
+select {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -369,9 +372,9 @@ input[type=text], select {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-  }
-  
-  input[type=submit] {
+}
+
+input[type=submit] {
     width: 100%;
     background-color: #006769;
     color: white;
@@ -380,34 +383,35 @@ input[type=text], select {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
-  
-  input[type=submit]:hover {
+}
+
+input[type=submit]:hover {
     background-color: #45a049;
-  }
+}
 
-  .width-100{
-    width:100%;
-  }
+.width-100 {
+    width: 100%;
+}
 
-  .height-100{
-    height:100px;
-  }
+.height-100 {
+    height: 100px;
+}
 
-  .grey-border{
-    border:1px solid #ccc;
-    border-radius:4px;
-    cursor:pointer;
-  }
+.grey-border {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
 
-  .flex-1 ul {
+.flex-1 ul {
     list-style-type: none;
-  }
+}
 
-  .left1{
+.left1 {
     text-align: left;
-  }
-.txt-dec{
+}
+
+.txt-dec {
     text-decoration: none;
-    color:#006769;
+    color: #006769;
 }
