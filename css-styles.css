@@ -96,13 +96,13 @@ ul#menu {
     #menu li {
         display: inline-block;
         width: 20%;
-        height: 30%;
+       
         padding-right: 10px;
         font-size: 12px;
     }
     div.block1 {
         width: 100%;
-        height: auto;
+        height: 400px;
         margin-left: 0px;
         margin-top: 100px;
         display:flex;
@@ -158,7 +158,8 @@ ul#menu {
     #blog,
     #contact{
         height:auto;
-        margin-bottom: 100px;
+
+}
 }
 
 li a {
