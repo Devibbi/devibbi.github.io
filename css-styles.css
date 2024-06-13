@@ -130,7 +130,7 @@ ul#menu {
     .block2{
         margin-left:-1px;
         width:100%;
-        margin-top:500px;
+        margin-top:510px;
     }
     @keyframes fadeIn {
         0% {
@@ -149,10 +149,16 @@ ul#menu {
     }
     .hidden {
         display: none;
-        position: absolute;
+    
         left:0 !important;
         top: -100px; 
     }
+    #home,
+    #expertise,
+    #blog,
+    #contact{
+        height:auto;
+        padding-bottom:20px;
 }
 
 li a {
