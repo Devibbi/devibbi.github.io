@@ -127,7 +127,32 @@ ul#menu {
     .block1 a{
         padding:5px !important;    
     }
-
+    .block2{
+        margin-left:-1px;
+        width:100%;
+        margin-top:500px;
+    }
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            left:0 !important;
+            top: -120px;
+    
+        }
+    
+        100% {
+            opacity: 1;
+            left:0 !important;
+            top: 0px;
+    
+        }
+    }
+    .hidden {
+        display: none;
+        position: absolute;
+        left:0 !important;
+        top: -100px; 
+    }
 }
 
 li a {
@@ -199,12 +224,9 @@ li a:hover:not(.active) {
     flex-direction: row;
 }
 
-@media only screen and (max-width:413px) and (max-height:915px) {
-    .block2 {
-        margin-top: 180%;
-    }
 
-}
+
+
 
 .padding-20 {
     padding: 20px;
