@@ -65,16 +65,8 @@ body {
 }
 
 
-@media only screen and (max-width:413px) and (max-height:915px) {
-    div.block1 {
-        width: 50%;
-        height: 45%;
-        margin-left: 0px;
-        margin-top: 100px;
 
-
-    }
-}
+   
 
 /* Making navigation */
 ul#menu {
@@ -108,17 +100,31 @@ ul#menu {
         padding-right: 10px;
         font-size: 12px;
     }
-
-    #block1 {
-        display: flex;
-        flex:1;
-    }
-    #block1aa{
+    div.block1 {
+        width: 100%;
+        height: auto;
+        margin-left: 0px;
+        margin-top: 100px;
         display:flex;
-        float:left;
-        flex:1;
-    }
         
+
+    }
+
+    .block3a {
+        
+        flex: 1;
+       
+        
+    }
+
+    #block3b {
+
+        flex: 1;
+    }
+    #cv-enter{
+        line-height: 50px;
+    }
+
 }
 
 li a {
