@@ -124,6 +124,9 @@ ul#menu {
     #cv-enter{
         line-height: 50px;
     }
+    .block1 a{
+        padding:5px !important;    
+    }
 
 }
 
