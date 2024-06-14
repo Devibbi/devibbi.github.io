@@ -221,7 +221,137 @@ ul#menu {
         display:inline-block;
     } 
 
-    .margint
+    .margint{}
+
+    
+}
+
+/* making for tablet */
+@media only screen and (min-width:415px) and (max-width:900px){
+    ul#menu {
+        margin-left: 0px;
+        width: 100%;
+        margin-top: 0px;
+        top: 0;
+        left: 0;
+        height: auto;
+        border-radius: 0;
+        z-index: 2;
+
+    }
+
+    #menu li {
+        display: inline-block;
+        width: 20%;
+
+        padding-right: 10px;
+        font-size: 12px;
+    }
+
+    div.block1 {
+        width: 100%;
+        height: auto;
+        margin-left: 0px;
+        margin-top: 75px;
+        display: flex;
+        position: static;
+        border-radius: 0;
+        box-shadow: none;
+        border-bottom: 2px solid rgba(45, 194, 77, 0.5);
+
+
+
+    }
+
+    .block1 img {
+        height: 240px !important;
+    }
+
+    .block3a {
+        height: auto;
+        flex: 1;
+
+
+    }
+
+    #block3b {
+
+        flex: 1;
+    }
+
+    #cv-enter {
+        line-height: 50px;
+        display: none;
+    }
+
+    .block1 a {
+        padding: 5px !important;
+    }
+
+    .block2 {
+        margin-left: 0;
+        width: 100%;
+        margin-top: 0;
+        height: auto;
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            left: 0 !important;
+            top: -120px;
+
+        }
+
+        100% {
+            opacity: 1;
+            left: 0 !important;
+            top: 0px;
+
+        }
+    }
+
+    .show {
+        position: static;
+    }
+
+    .hidden {
+        display: none;
+        position: static !important;
+        left: 0 !important;
+        top: -100px;
+    }
+
+    #home,
+    #expertise,
+    #blog,
+    #contact {}
+
+    .background.gradient {
+        overflow: visible;
+        position: relative;
+    }
+
+    
+
+    .margint5 {
+        margin-top: 0 !important;
+    }
+    
+    hr{
+        overflow: visible;
+    }
+    .right1{
+        float:right !important;
+        text-align:right;
+    }
+    .inline-block{
+        display:inline-block;
+    } 
+
+    .margint{}
+
+   
 }
 
 li a {
