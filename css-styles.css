@@ -186,7 +186,6 @@ ul#menu {
     }
     .right{
         float:left !important;
- 
         font-size:13px;
         padding:0 !important;
 
@@ -194,6 +193,7 @@ ul#menu {
     .left{
         font-size:13px;
         padding:0 !important;
+        margin-bottom:10px;
     }
    .margint5{
     margin-top:0 !important;
