@@ -160,9 +160,12 @@ ul#menu {
     
         }
     }
+    .show{
+        position:static;
+    }
     .hidden {
         display: none;
-    
+        position:static;
         left:0 !important;
         top: -100px; 
     }
