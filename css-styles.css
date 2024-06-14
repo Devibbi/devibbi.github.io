@@ -76,11 +76,12 @@ ul#menu {
     background-color: #40A578;
     position: fixed;
     height: 360px;
-    overflow: auto;
+    overflow: hidden;
     margin-top: 130px;
     margin-left: 75px;
     border-radius: 5px;
     font-weight: bold;
+    
 }
 
 @media only screen and (max-width:413px) and (max-height:915px) {
