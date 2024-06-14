@@ -180,9 +180,24 @@ ul#menu {
         overflow:visible;
         position:relative;
     }
-    .seperate{
+    .seperate-font1{
+        font-size:14px !important;
 
     }
+    .right{
+        float:left !important;
+ 
+        font-size:13px;
+        padding:0 !important;
+
+    }
+    .left{
+        font-size:13px;
+        padding:0 !important;
+    }
+   .margint5{
+    margin-top:0 !important;
+}
 }
 
 li a {
