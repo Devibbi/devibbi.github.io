@@ -109,7 +109,7 @@ ul#menu {
         margin-left: 0px;
         margin-top: 100px;
         display:flex;
-        position:relative;
+        position:static;
         
 
     }
@@ -168,6 +168,9 @@ ul#menu {
     .background.gradient{
         overflow:visible;
         position:relative;
+    }
+    .seperate{
+
     }
 }
 
