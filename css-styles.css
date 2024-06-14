@@ -11,6 +11,11 @@ body {
     background: white;
     font-family: "Lucida Console", "Courier New", monospace;
 }
+.container{
+    display:flex;
+    flex-direction: row;
+    margin: 100px 100px;
+}
 
 /* making background*/
 .background {
@@ -46,9 +51,8 @@ body {
     width: 500px;
     background: white;
     height: 670px;
-    position: fixed;
-    margin-left: 230px;
-    margin-top: 100px;
+    
+   
     box-shadow: -10px 10px 10px rgba(45, 194, 77, 0.5);
     border-radius: 10px;
 
@@ -60,8 +64,8 @@ body {
     width: 800px;
     background: white;
     height: 450px;
-    margin-top: 200px;
-    margin-left: 780px;
+    margin-top:100px;
+
 }
 
 
@@ -74,11 +78,10 @@ ul#menu {
     padding: 0;
     width: 120px;
     background-color: #40A578;
-    position: fixed;
+   
     height: 360px;
     overflow: hidden;
-    margin-top: 130px;
-    margin-left: 75px;
+    margin-top:100px;
     border-radius: 5px;
     font-weight: bold;
     
@@ -96,6 +99,10 @@ ul#menu {
         z-index: 2;
 
     }
+    .container{
+        flex-direction:column;
+        margin:0;
+    }
 
     #menu li {
         display: inline-block;
@@ -108,8 +115,8 @@ ul#menu {
     div.block1 {
         width: 100%;
         height: auto;
-        margin-left: 0px;
-        margin-top: 75px;
+        margin-left: 0;
+        margin-top: 0;
         display: flex;
         position: static;
         border-radius: 0;
@@ -524,7 +531,6 @@ div .color-1:hover {
 
 .hidden {
     display: none;
-    position: absolute;
     left: -100px;
 }
 
