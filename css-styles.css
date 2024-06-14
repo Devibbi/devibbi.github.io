@@ -43,7 +43,7 @@ body {
 /* making main blocks */
 .block1 {
     display: block;
-    width: 30%;
+    width: 500px;
     background: white;
     height: 670px;
     position: fixed;
@@ -57,7 +57,7 @@ body {
 
 .block2 {
     display: block;
-    width: 45%;
+    width: 800px;
     background: white;
     height: 450px;
     margin-top: 200px;
@@ -72,10 +72,10 @@ body {
 ul#menu {
     list-style-type: none;
     padding: 0;
-    width: 8%;
+    width: 120px;
     background-color: #40A578;
     position: fixed;
-    height: 40%;
+    height: 360px;
     overflow: auto;
     margin-top: 130px;
     margin-left: 75px;
