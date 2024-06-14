@@ -213,6 +213,12 @@ ul#menu {
     hr{
         overflow: visible;
     }
+    .right1{
+        float:right !important;
+    }
+    .inline-block{
+        display:inline-block;
+    }
 }
 
 li a {
@@ -272,6 +278,7 @@ li a:hover:not(.active) {
 
 
 }
+
 
 
 .bordar1 p {
