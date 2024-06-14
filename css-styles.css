@@ -107,15 +107,22 @@ ul#menu {
         width: 100%;
         height: auto;
         margin-left: 0px;
-        margin-top: 100px;
+        margin-top: 75px;
         display:flex;
         position:static;
+        border-radius:0;
+        box-shadow: none;
+        border-bottom:2px solid rgba(45, 194, 77, 0.5);
+
         
 
     }
+    .block1 image{
+        height:240px;
+    }
 
     .block3a {
-        
+        height:auto;
         flex: 1;
        
         
@@ -127,6 +134,7 @@ ul#menu {
     }
     #cv-enter{
         line-height: 50px;
+        display:none;
     }
     .block1 a{
         padding:5px !important;    
