@@ -106,6 +106,7 @@ ul#menu {
         margin-left: 0px;
         margin-top: 100px;
         display:flex;
+        position:relative;
         
 
     }
@@ -131,6 +132,7 @@ ul#menu {
         margin-left:-1px;
         width:100%;
         margin-top:510px;
+        height:auto;
     }
     @keyframes fadeIn {
         0% {
@@ -151,7 +153,7 @@ ul#menu {
         display: none;
     
         left:0 !important;
-        top: -100px; 
+        top: 100px; 
     }
     #home,
     #expertise,
@@ -160,6 +162,10 @@ ul#menu {
         
 
 }
+    .background.gradient{
+        overflow:visible;
+        position:relative;
+    }
 }
 
 li a {
