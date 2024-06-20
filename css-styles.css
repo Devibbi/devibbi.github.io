@@ -253,7 +253,25 @@ ul#menu {
     .block1 a{
         padding: 5px !important;
     }
+    .right {
+        float: left !important;
+        font-size: 13px;
+        padding: 0 !important;
+
+    }
+
+    .left {
+        font-size: 13px;
+        padding: 3px !important;
+        margin-bottom: 10px;
+    }
+    .right1 {
+        float: right !important;
+        text-align: right;
+    }
+
 }
+/* media queries end here */
 
 li a {
     display: block;
@@ -442,8 +460,9 @@ div .color-1:hover {
     }
 }
 
+
 .show {
-    z-index: -1;
+    z-index: 1;
     display: block;
 
     -webkit-animation-duration: 2s;
