@@ -11,8 +11,9 @@ body {
     background: white;
     font-family: "Lucida Console", "Courier New", monospace;
 }
-.container{
-    display:flex;
+
+.container {
+    display: flex;
     flex-direction: row;
     margin: 100px 100px;
 }
@@ -51,8 +52,8 @@ body {
     width: 500px;
     background: white;
     height: 670px;
-    
-   
+
+
     box-shadow: -10px 10px 10px rgba(45, 194, 77, 0.5);
     border-radius: 10px;
 
@@ -64,7 +65,7 @@ body {
     width: 800px;
     background: white;
     height: 450px;
-    margin-top:100px;
+    margin-top: 100px;
 
 }
 
@@ -78,13 +79,13 @@ ul#menu {
     padding: 0;
     width: 120px;
     background-color: #40A578;
-   
+
     height: 360px;
     overflow: hidden;
-    margin-top:100px;
+    margin-top: 100px;
     border-radius: 5px;
     font-weight: bold;
-    
+
 }
 
 @media only screen and (max-width:413px) and (max-height:915px) {
@@ -97,12 +98,13 @@ ul#menu {
         height: auto;
         border-radius: 0;
         z-index: 2;
-        margin-bottom:0;
+        margin-bottom: 0;
 
     }
-    .container{
-        flex-direction:column;
-        margin:0;
+
+    .container {
+        flex-direction: column;
+        margin: 0;
     }
 
     #menu li {
@@ -178,6 +180,7 @@ ul#menu {
 
     .show {
         position: static;
+        z-index: 1 !important;
     }
 
     .hidden {
@@ -218,149 +221,38 @@ ul#menu {
     .margint5 {
         margin-top: 0 !important;
     }
-    
-    hr{
+
+    hr {
         overflow: visible;
     }
-    .right1{
-        float:right !important;
-        text-align:right;
+
+    .right1 {
+        float: right !important;
+        text-align: right;
     }
-    .inline-block{
-        display:inline-block;
-    } 
 
-    .margint{}
+    .inline-block {
+        display: inline-block;
+    }
 
-    
+    .margint {}
+
+
 }
 
 /* making for tablet */
-@media only screen and (min-width:415px) and (max-width:900px){
-    ul#menu {
-        margin-left: 0px;
-        width: 100%;
-        margin-top: 0px;
-        top: 0;
-        left: 0;
-        height: auto;
-        border-radius: 0;
-        z-index: 2;
+@media only screen and (min-width:415px) and (max-width:900px) {
+    .container {
+        margin: 0px;
 
     }
 
-    #menu li {
-        display: inline-block;
-        width: 20%;
-
-        padding-right: 10px;
-        font-size: 12px;
+    .block1 {
+        height: 681px !important;
     }
-
-    div.block1 {
-        width: 100%;
-        height: auto;
-        margin-left: 0px;
-        margin-top: 75px;
-        display: flex;
-        position: static;
-        border-radius: 0;
-        box-shadow: none;
-        border-bottom: 2px solid rgba(45, 194, 77, 0.5);
-
-
-
-    }
-
-    .block1 img {
-        height: 240px !important;
-    }
-
-    .block3a {
-        height: auto;
-        flex: 1;
-
-
-    }
-
-    #block3b {
-
-        flex: 1;
-    }
-
-    #cv-enter {
-        line-height: 50px;
-        display: none;
-    }
-
-    .block1 a {
+    .block1 a{
         padding: 5px !important;
     }
-
-    .block2 {
-        margin-left: 0;
-        width: 100%;
-        margin-top: 0;
-        height: auto;
-    }
-
-    @keyframes fadeIn {
-        0% {
-            opacity: 0;
-            left: 0 !important;
-            top: -120px;
-
-        }
-
-        100% {
-            opacity: 1;
-            left: 0 !important;
-            top: 0px;
-
-        }
-    }
-
-    .show {
-        position: static;
-    }
-
-    .hidden {
-        display: none;
-        position: static !important;
-        left: 0 !important;
-        top: -100px;
-    }
-
-    #home,
-    #expertise,
-    #blog,
-    #contact {}
-
-    .background.gradient {
-        overflow: visible;
-        position: relative;
-    }
-
-    
-
-    .margint5 {
-        margin-top: 0 !important;
-    }
-    
-    hr{
-        overflow: visible;
-    }
-    .right1{
-        float:right !important;
-        text-align:right;
-    }
-    .inline-block{
-        display:inline-block;
-    } 
-
-    .margint{}
-
-   
 }
 
 li a {
