@@ -268,7 +268,7 @@ ul#menu {
 }
 /* media queries end here */
 
-li a {
+#menu li a {
     display: block;
     color: #000;
     padding: 15px;
@@ -276,12 +276,12 @@ li a {
     border-bottom: 5px solid green;
 }
 
-li a.active {
+#menu li a.active {
     background-color: #006769;
     color: #E6FF94;
 }
 
-li a:hover:not(.active) {
+#menu li a:hover:not(.active) {
     background-color: #9DDE8B;
     color: #006769;
 }
@@ -563,6 +563,7 @@ input[type=submit]:hover {
 
 .flex-1 ul {
     list-style-type: none;
+    padding: 0;
 }
 
 .left1 {
