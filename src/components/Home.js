@@ -7,13 +7,17 @@ const HomePage = async () => {
     const personalInfo = await getPersonalInfo();
     const { name, title, profileImage, socialLinks = {} } = personalInfo?.fields || {};
 
+    // Debug log to check social links data
+    console.log('Social Links Data:', socialLinks);
+
     if (!personalInfo) {
         return <div>Loading...</div>;
     }
 
     return (
-        <section id="home" className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 to-blue-500 text-white p-6 md:p-10">
-            <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
+        <section id="home" className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 to-blue-500 dark:bg-gradient-to-b inset-0 dark:from-gray-900 dark:to-gray-800">
+            <div className="flex flex-col items-center text-center ">
+                {/* Profile Image */}
                 <div className="relative w-48 h-48 md:w-64 md:h-64 mb-8">
                     {profileImage && (
                         <Image
@@ -26,9 +30,24 @@ const HomePage = async () => {
                         />
                     )}
                 </div>
-                <h1 className="text-3xl md:text-5xl font-bold mb-4">{name || 'Loading...'}</h1>
-                <p className="text-xl md:text-2xl mb-6">{title || 'Loading...'}</p>
-                <SocialLinks socialLinks={socialLinks} />
+
+                {/* Name */}
+                <h1 className="text-4xl md:text-5xl font-bold mb-3 text-gray-800 dark:text-gray-200">
+                    {name || 'Loading...'}
+                </h1>
+
+                {/* Title */}
+                <p className="text-xl md:text-2xl mb-4 text-gray-600 dark:text-gray-300">
+                    {title || 'Loading...'}
+                </p>
+
+                {/* Social links below title - no background */}
+                <div className="mb-10">
+                    <SocialLinks
+                        socialLinks={socialLinks}
+                        className="flex items-center justify-center gap-6"
+                    />
+                </div>
             </div>
         </section>
     );

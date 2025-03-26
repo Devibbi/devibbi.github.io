@@ -67,7 +67,36 @@ export async function getAllBlogPosts() {
             order: '-fields.publishDate',
             include: 2, // Include nested entries up to 2 levels deep
         });
+
         console.log('Blog posts fetched:', response.items.length);
+
+        // Add more debugging information
+        if (response.items.length > 0) {
+            console.log('First blog post ID:', response.items[0].sys.id);
+            console.log('First blog post available fields:', Object.keys(response.items[0].fields).join(', '));
+
+            // Check for externalUrl field specifically
+            const hasExternalUrl = response.items.some(item => item.fields && item.fields.externalUrl);
+            console.log('Any blog post has externalUrl field:', hasExternalUrl);
+
+            // Check image structure
+            if (response.items[0].fields.featuredImage) {
+                console.log('Featured image type:', typeof response.items[0].fields.featuredImage);
+
+                if (typeof response.items[0].fields.featuredImage === 'object') {
+                    console.log('Featured image keys:', Object.keys(response.items[0].fields.featuredImage).join(', '));
+
+                    if (response.items[0].fields.featuredImage.sys) {
+                        console.log('Featured image sys type:', response.items[0].fields.featuredImage.sys.type);
+                    }
+
+                    if (response.items[0].fields.featuredImage.fields) {
+                        console.log('Featured image fields:', Object.keys(response.items[0].fields.featuredImage.fields).join(', '));
+                    }
+                }
+            }
+        }
+
         return response.items;
     } catch (error) {
         console.error('Error fetching blog posts:', error);

@@ -3,19 +3,199 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
   --foreground: #171717;
+  /* Light theme text color */
+  --background: #ffffff;
+  /* Light theme background color */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #ffffff;
+    /* Dark theme text color */
+    --background: #121212;
+    /* Dark theme background color */
   }
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background-color: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+  /* Smooth transition */
+}
+
+body.dark {
+  background-color: #121212;
+  /* Dark background */
+  color: #ffffff;
+  /* Light text */
+}
+
+body.dark .bg-white {
+  background-color: #1e1e1e;
+  /* Dark background for white elements */
+}
+
+body.dark .text-gray-600 {
+  color: #b0b0b0;
+  /* Lighter gray for text */
+}
+
+/* Enhanced typography */
+html {
+  @apply text-base;
+  font-feature-settings: "kern", "liga", "calt", "pnum", "tnum";
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold;
+  letter-spacing: -0.025em;
+}
+
+h1 {
+  @apply text-4xl md:text-5xl lg:text-6xl;
+  line-height: 1.1;
+}
+
+h2 {
+  @apply text-3xl md:text-4xl lg:text-5xl;
+  line-height: 1.2;
+}
+
+h3 {
+  @apply text-2xl md:text-3xl;
+  line-height: 1.3;
+}
+
+h4 {
+  @apply text-xl md:text-2xl;
+  line-height: 1.4;
+}
+
+p {
+  @apply text-gray-700 leading-relaxed my-2;
+}
+
+/* Enhanced animation for buttons and interactive elements */
+button,
+a {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Gradient text utility class */
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600;
+}
+
+.gradient-text-secondary {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500;
+}
+
+/* Enhanced card styling */
+.card {
+  @apply bg-white/90 backdrop-blur-lg rounded-xl shadow-xl transition-all duration-300;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+/* Common pattern for section backgrounds */
+.bg-grid-pattern {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Custom animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes float-delayed {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite;
+}
+
+/* Button styles */
+button {
+  background-color: #4a5568;
+  /* Dark gray */
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  /* Rounded corners */
+  padding: 0.5rem 1rem;
+  /* Padding */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2d3748;
+  /* Darker gray on hover */
+}
+
+body {
+  transition: background-color 0.3s, color 0.3s;
+  /* Smooth transition */
+}
+
+body.dark {
+  background-color: #121212;
+  /* Dark background */
+  color: #ffffff;
+  /* Light text */
+}
+
+/* Example for specific elements */
+.text-gray-600 {
+  color: #4a5568;
+  /* Light gray for light mode */
+}
+
+body.dark .text-gray-600 {
+  color: #cbd5e0;
+  /* Lighter gray for dark mode */
+}
+
+.bg-lightblue-50 {
+  background-color: #e9f3f5;
+  /* Light blue color */
 }
