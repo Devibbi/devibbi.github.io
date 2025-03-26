@@ -34,3 +34,8 @@
 .submitButton:hover {
     background-color: #0056b3;
 }
+
+.bg-lightblue-50 {
+    background-color: #e0f7fa;
+    /* Light blue color */
+}

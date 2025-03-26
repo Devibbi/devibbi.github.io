@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 const Navbar = () => {
     const [active, setActive] = useState('home');
     const [isMobile, setIsMobile] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
         const handleResize = () => {
@@ -11,13 +12,30 @@ const Navbar = () => {
         };
         handleResize();
         window.addEventListener('resize', handleResize);
+
+        // Load theme preference from localStorage
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setIsDarkMode(true);
+            document.body.classList.add('dark');
+        }
+
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     const handleMenuClick = (section) => {
         setActive(section);
         const element = document.getElementById(section);
-        element?.scrollIntoView({ behavior: 'smooth' });
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    const toggleDarkMode = () => {
+        const newDarkMode = !isDarkMode;
+        setIsDarkMode(newDarkMode);
+        document.body.classList.toggle('dark', newDarkMode);
+        localStorage.setItem('theme', newDarkMode ? 'dark' : 'light');
     };
 
     const navItems = [
@@ -29,19 +47,25 @@ const Navbar = () => {
 
     return (
         <nav className={`${isMobile ? 'fixed bottom-0 left-0 w-full py-2' : 'fixed top-0 left-0 h-full w-24 py-8'} 
-            bg-gradient-to-r from-green-600 to-green-700 text-white shadow-xl z-50`}>
+            bg-gradient-to-r from-green-600 to-green-700  dark:from-gray-400 dark:to-gray-900 text-white shadow-xl z-50 flex flex-col justify-between`}>
             <ul className={`flex ${isMobile ? 'flex-row justify-around' : 'flex-col items-center space-y-8'}`}>
                 {navItems.map(({ id, icon, label }) => (
                     <li key={id}
                         onClick={() => handleMenuClick(id)}
-                        className={`cursor-pointer transition-all duration-300 hover:scale-110 p-2 
-                            ${active === id ? 'text-yellow-300 font-bold' : 'text-white'}
-                            ${isMobile ? 'text-center' : 'w-full text-center'}`}>
-                        <span className="text-xl mb-1 block">{icon}</span>
+                        className={`flex flex-col items-center cursor-pointer transition-all duration-300 hover:scale-110 p-2 
+                            ${active === id ? 'text-yellow-300 font-bold' : 'text-white'}`}>
+                        <span className="text-xl mb-1">{icon}</span>
                         <span className="text-sm">{label}</span>
                     </li>
                 ))}
             </ul>
+            <button
+                onClick={toggleDarkMode}
+                className={`mb-4 p-1 rounded-full transition duration-300 
+                    ${isDarkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-200 text-black hover:bg-gray-300'} 
+                    shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-sm`}>
+                {isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode'}
+            </button>
         </nav>
     );
 };
