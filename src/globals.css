@@ -69,3 +69,21 @@ button:hover {
   color: #4a5568;
   /* Light gray for light mode */
 }
+
+@keyframes backgroundAnimation {
+  0% {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  50% {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  100% {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.animated-background {
+  animation: backgroundAnimation 5s infinite;
+}
