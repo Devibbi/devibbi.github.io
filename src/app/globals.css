@@ -9,13 +9,11 @@
   /* Light theme background color */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground: #ffffff;
-    /* Dark theme text color */
-    --background: #121212;
-    /* Dark theme background color */
-  }
+html.dark {
+  --foreground: #ffffff;
+  /* Dark theme text color */
+  --background: #121212;
+  /* Dark theme background color */
 }
 
 body {
@@ -26,19 +24,19 @@ body {
   /* Smooth transition */
 }
 
-body.dark {
+html.dark body {
   background-color: #121212;
   /* Dark background */
   color: #ffffff;
   /* Light text */
 }
 
-body.dark .bg-white {
+html.dark .bg-white {
   background-color: #1e1e1e;
   /* Dark background for white elements */
 }
 
-body.dark .text-gray-600 {
+html.dark .text-gray-600 {
   color: #b0b0b0;
   /* Lighter gray for text */
 }
@@ -289,4 +287,14 @@ body.dark .text-gray-600 {
 .bg-lightblue-50 {
   background-color: #e9f3f5;
   /* Light blue color */
+}
+
+/* We need to ensure dark mode applies to sections with backgrounds */
+html.dark .card {
+  background-color: rgba(30, 30, 30, 0.9);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+html.dark .card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
 }
