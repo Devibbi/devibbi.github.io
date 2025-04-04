@@ -1,6 +1,7 @@
 // Skills.js
 import React from "react";
 import { getAllSkills } from '../utils/contentfulQueries';
+import SkillsBackground from "./SkillsBackground";
 
 const Skills = async () => {
     const skillsData = await getAllSkills();
@@ -8,9 +9,11 @@ const Skills = async () => {
     return (
         <section id="skills" className="min-h-screen relative overflow-hidden py-20 bg-white dark:bg-gray-900">
             {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:bg-gradient-to-b dark:from-gray-800 dark:to-gray-700">
-
+            <div className="absolute inset-0 bg-gradient-to-br from-green-50/80 via-blue-50/80 to-purple-50/80 dark:bg-gradient-to-b dark:from-gray-800 dark:to-gray-700">
             </div>
+
+            {/* Add SkillsBackground directly in the section */}
+            <SkillsBackground />
 
             <div className="relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,12 +43,8 @@ const Skills = async () => {
                 </div>
             </div>
 
-            {/* Floating Shapes */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-10 w-20 h-20 bg-green-500/10 rounded-full blur-xl animate-float"></div>
-                <div className="absolute top-1/3 right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-float-delayed"></div>
-                <div className="absolute bottom-1/4 left-1/3 w-24 h-24 bg-purple-500/10 rounded-full blur-xl animate-float"></div>
-            </div>
+            {/* Remove the extra floating icons as they duplicate the SkillsBackground */}
+            {/* These were likely causing confusion about what's being displayed */}
         </section>
     );
 };

@@ -5,26 +5,45 @@ import { testEnvVariables } from './envTest';
 const envVars = testEnvVariables();
 
 // Add debug logging for environment variables
-console.log('Environment check results:', {
-    spaceIdExists: !!envVars.spaceId,
-    accessTokenExists: !!envVars.accessToken
-});
-
-if (!envVars.spaceId || !envVars.accessToken) {
-    throw new Error(
-        'Please provide required Contentful credentials in your .env.local file. Missing: ' +
-        (!envVars.spaceId ? 'CONTENTFUL_SPACE_ID ' : '') +
-        (!envVars.accessToken ? 'CONTENTFUL_ACCESS_TOKEN' : '')
-    );
+if (process.env.NODE_ENV === 'development') {
+    console.log('Environment check results:', {
+        spaceIdExists: !!envVars.spaceId,
+        accessTokenExists: !!envVars.accessToken
+    });
 }
 
-const client = createClient({
-    space: envVars.spaceId,
-    accessToken: envVars.accessToken,
-});
+// Create client only if credentials exist
+let client = null;
+try {
+    if (envVars.spaceId && envVars.accessToken) {
+        client = createClient({
+            space: envVars.spaceId,
+            accessToken: envVars.accessToken,
+        });
+    } else if (process.env.NODE_ENV === 'development') {
+        console.warn(
+            'Missing Contentful credentials: ' +
+            (!envVars.spaceId ? 'CONTENTFUL_SPACE_ID ' : '') +
+            (!envVars.accessToken ? 'CONTENTFUL_ACCESS_TOKEN' : '')
+        );
+    }
+} catch (error) {
+    console.error('Error initializing Contentful client:', error);
+}
+
+// Safely execute Contentful queries
+const safelyQueryContentful = async (queryFn) => {
+    if (!client) return null;
+    try {
+        return await queryFn();
+    } catch (error) {
+        console.error('Contentful query error:', error);
+        return null;
+    }
+};
 
 export async function getPersonalInfo() {
-    try {
+    return safelyQueryContentful(async () => {
         console.log('Fetching personal info...');
         const response = await client.getEntries({
             content_type: 'personalInfo',
@@ -32,35 +51,31 @@ export async function getPersonalInfo() {
         });
         console.log('Personal info fetched:', !!response.items[0]);
         return response.items[0];
-    } catch (error) {
-        console.error('Error fetching personal info:', error);
-        return null;
-    }
+    }) || null;
 }
 
 export async function getAllSkills() {
-    try {
+    return safelyQueryContentful(async () => {
         console.log('Fetching skills...');
         const response = await client.getEntries({
             content_type: 'skill',
         });
         console.log('Skills fetched:', response.items.length);
         return response.items;
-    } catch (error) {
-        console.error('Error fetching skills:', error);
-        return [];
-    }
+    }) || [];
 }
 
 export async function getAllProjects() {
-    const response = await client.getEntries({
-        content_type: 'project',
-    });
-    return response.items;
+    return safelyQueryContentful(async () => {
+        const response = await client.getEntries({
+            content_type: 'project',
+        });
+        return response.items;
+    }) || [];
 }
 
 export async function getAllBlogPosts() {
-    try {
+    return safelyQueryContentful(async () => {
         console.log('Fetching blog posts...');
         const response = await client.getEntries({
             content_type: 'blogPost',
@@ -70,8 +85,8 @@ export async function getAllBlogPosts() {
 
         console.log('Blog posts fetched:', response.items.length);
 
-        // Add more debugging information
-        if (response.items.length > 0) {
+        // Add more debugging information in development
+        if (process.env.NODE_ENV === 'development' && response.items.length > 0) {
             console.log('First blog post ID:', response.items[0].sys.id);
             console.log('First blog post available fields:', Object.keys(response.items[0].fields).join(', '));
 
@@ -98,14 +113,11 @@ export async function getAllBlogPosts() {
         }
 
         return response.items;
-    } catch (error) {
-        console.error('Error fetching blog posts:', error);
-        return [];
-    }
+    }) || [];
 }
 
 export async function getBlogPostBySlug(slug) {
-    try {
+    return safelyQueryContentful(async () => {
         console.log('Fetching blog post by slug:', slug);
         const response = await client.getEntries({
             content_type: 'blogPost',
@@ -115,14 +127,11 @@ export async function getBlogPostBySlug(slug) {
         });
         console.log('Blog post found:', !!response.items[0]);
         return response.items[0];
-    } catch (error) {
-        console.error('Error fetching blog post:', error);
-        return null;
-    }
+    }) || null;
 }
 
 export async function getContactInfo() {
-    try {
+    return safelyQueryContentful(async () => {
         console.log('Fetching contact info...');
         const response = await client.getEntries({
             content_type: 'contactInfo',
@@ -130,8 +139,69 @@ export async function getContactInfo() {
         });
         console.log('Contact info fetched:', !!response.items[0]);
         return response.items[0];
+    }) || null;
+}
+
+export async function getIQQuizHighScores() {
+    if (!client) {
+        console.warn('Contentful client not initialized. Cannot fetch high scores.');
+        return [];
+    }
+
+    try {
+        console.log('Fetching IQ Quiz high scores...');
+
+        // First, check what content types are available (for debugging)
+        try {
+            const contentTypeResponse = await client.getContentTypes();
+            console.log('Available content types:',
+                contentTypeResponse.items.map(ct => ct.sys.id).join(', '));
+
+            // Check if our content type exists
+            const hasIqQuizScore = contentTypeResponse.items.some(ct =>
+                ct.sys.id === 'iqQuizScore');
+
+            if (!hasIqQuizScore) {
+                console.warn('Content type "iqQuizScore" not found in Contentful space');
+                return [];
+            }
+        } catch (ctError) {
+            console.warn('Could not fetch content types:', ctError.message);
+        }
+
+        // Now try to get entries
+        try {
+            // Set contentType with exact casing
+            const contentType = 'iqQuizScore';
+            console.log(`Attempting to fetch entries with content_type: "${contentType}"`);
+
+            // Try to get the entries
+            const response = await client.getEntries({
+                content_type: contentType,
+                order: '-fields.score',
+                limit: 10,
+            });
+
+            console.log('IQ Quiz scores fetched:', response.items.length);
+            return response.items;
+        } catch (entriesError) {
+            // Detailed error logging
+            console.warn('Error fetching IQ Quiz scores:', entriesError.message);
+
+            // Check if the error is about unknown content type
+            if (entriesError?.details?.errors?.some(e => e.name === 'unknownContentType')) {
+                console.warn(`The content type "${entriesError?.details?.errors[0]?.value}" does not exist in Contentful yet.`);
+                console.warn(`Run the script: node contentful/create-iq-score-content-type.js`);
+
+                // Return empty array to gracefully handle this case
+                return [];
+            }
+
+            throw entriesError;
+        }
     } catch (error) {
-        console.error('Error fetching contact info:', error);
-        return null;
+        console.error('Error in getIQQuizHighScores:', error);
+        // Return empty array for any errors to avoid breaking the app
+        return [];
     }
 } 

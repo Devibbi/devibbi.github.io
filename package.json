@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rimraf .next"
   },
   "dependencies": {
+    "canvas-confetti": "^1.9.3",
     "contentful": "^11.5.10",
     "contentful-management": "^11.48.1",
     "dotenv": "^16.4.7",
@@ -24,6 +26,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
     "postcss": "^8",
+    "rimraf": "^5.0.10",
     "tailwindcss": "^3.4.1"
   }
 }

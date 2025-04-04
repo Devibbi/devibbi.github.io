@@ -1,20 +1,46 @@
 import { createClient } from 'contentful';
 
-console.log("Space ID:", process.env.CONTENTFUL_SPACE_ID);
-console.log("Access Token:", process.env.CONTENTFUL_ACCESS_TOKEN);
+// Create the client only if we're in a browser OR if the required environment variables are available
+let client = null;
+let previewClient = null;
 
-export const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
-});
+// Only log in development
+if (process.env.NODE_ENV === 'development') {
+    console.log("Space ID:", process.env.CONTENTFUL_SPACE_ID);
+    console.log("Access Token:", process.env.CONTENTFUL_ACCESS_TOKEN);
+}
 
-export const previewClient = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN,
-    host: 'preview.contentful.com',
-});
+try {
+    if (typeof window !== 'undefined' || (process.env.CONTENTFUL_SPACE_ID && process.env.CONTENTFUL_ACCESS_TOKEN)) {
+        client = createClient({
+            space: process.env.CONTENTFUL_SPACE_ID,
+            accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+        });
+    }
 
-export const getClient = (preview) => (preview ? previewClient : client);
+    if (typeof window !== 'undefined' || (process.env.CONTENTFUL_SPACE_ID && process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN)) {
+        previewClient = createClient({
+            space: process.env.CONTENTFUL_SPACE_ID,
+            accessToken: process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN,
+            host: 'preview.contentful.com',
+        });
+    }
+} catch (error) {
+    console.error('Failed to initialize Contentful client:', error);
+}
+
+export { client, previewClient };
+
+// Safely call Contentful
+export const fetchEntries = async (params) => {
+    if (!client) return { items: [] };
+    try {
+        return await client.getEntries(params);
+    } catch (error) {
+        console.error('Error fetching entries:', error);
+        return { items: [] };
+    }
+};
 
 // Fetch Blog Posts
 export const fetchBlogPosts = async () => {
@@ -30,7 +56,7 @@ export const fetchSkills = async () => {
 
 // Fetch Home Page Content
 export const fetchHomePage = async () => {
-    const response = await client.getEntries({ content_type: 'homePage' });
+    const response = await fetchEntries({ content_type: 'homePage' });
     return response.items[0]; // Assuming only one home page entry
 };
 
