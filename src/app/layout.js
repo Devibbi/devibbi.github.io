@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import BinaryBackground from "../components/BinaryBackground";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,10 +19,29 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="light">
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Simple script to check for dark mode preference
+            try {
+              if (localStorage.getItem('darkMode') === 'true' || 
+                  (localStorage.getItem('darkMode') === null && 
+                   window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('light');
+              } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+              }
+            } catch (e) {}
+          `
+        }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <BinaryBackground />
         {children}
       </body>
     </html>

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { getPersonalInfo } from '../utils/contentfulQueries';
 import SocialLinks from './SocialLinks';
 import IQTest from '../components/IQTest';
+import SectionBinaryBackground from './SectionBinaryBackground';
 import '../globals.css';
 
 const HomePage = () => {
@@ -30,8 +31,11 @@ const HomePage = () => {
 
     return (
         <div className="relative animated-background">
-            <section id="home" className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 to-blue-500 dark:bg-gradient-to-b inset-0 dark:from-gray-900 dark:to-gray-800">
-                <div className="flex flex-col items-center text-center ">
+            <section id="home" className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 to-blue-500 dark:bg-gradient-to-b inset-0 dark:from-gray-900 dark:to-gray-800 relative overflow-hidden">
+                {/* Add section-specific binary background */}
+                <SectionBinaryBackground color="blue" density={1.2} speed={1.2} opacity={0.5} />
+
+                <div className="flex flex-col items-center text-center relative z-10">
                     {/* Profile Image */}
                     <div className="relative w-48 h-48 md:w-64 md:h-64 mb-8">
                         {profileImage && (

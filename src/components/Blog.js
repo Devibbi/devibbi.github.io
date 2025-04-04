@@ -2,6 +2,7 @@ import React from 'react';
 import { getAllBlogPosts } from '../utils/contentfulQueries';
 import Image from 'next/image';
 import BlogBackground from './BlogBackground';
+import SectionBinaryBackground from './SectionBinaryBackground';
 
 const Blog = async () => {
     const blogPosts = await getAllBlogPosts();
@@ -20,6 +21,9 @@ const Blog = async () => {
 
             {/* Add BlogBackground directly in the section */}
             <BlogBackground />
+
+            {/* Add Binary Background with pink color */}
+            <SectionBinaryBackground color="pink" density={1.1} speed={0.9} opacity={0.35} />
 
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
