@@ -1,6 +1,7 @@
 import React from 'react';
 import { getAllBlogPosts } from '../utils/contentfulQueries';
 import Image from 'next/image';
+import BlogBackground from './BlogBackground';
 
 const Blog = async () => {
     const blogPosts = await getAllBlogPosts();
@@ -14,9 +15,11 @@ const Blog = async () => {
     return (
         <section id="blog" className="min-h-screen relative py-20 overflow-hidden">
             {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:bg-gradient-to-b dark:from-gray-700 dark:to-gray-500">
-
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/80 via-pink-50/80 to-blue-50/80 dark:bg-gradient-to-b dark:from-gray-700 dark:to-gray-500">
             </div>
+
+            {/* Add BlogBackground directly in the section */}
+            <BlogBackground />
 
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
@@ -152,13 +155,6 @@ const Blog = async () => {
                         <p className="text-gray-500 dark:text-gray-400 mt-2">I'm working on some exciting content to share with you.</p>
                     </div>
                 )}
-            </div>
-
-            {/* Floating Shapes */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 right-10 w-20 h-20 bg-purple-500/10 rounded-full blur-xl animate-float"></div>
-                <div className="absolute bottom-1/3 left-10 w-32 h-32 bg-pink-500/10 rounded-full blur-xl animate-float-delayed"></div>
-                <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-blue-500/10 rounded-full blur-xl animate-float"></div>
             </div>
         </section>
     );

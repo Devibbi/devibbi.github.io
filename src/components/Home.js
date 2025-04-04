@@ -67,11 +67,40 @@ const HomePage = () => {
             </section>
 
             {/* IQ Test Button */}
-            <button
-                onClick={() => setShowIQTest(true)}
-                className="fixed top-4 right-4 p-2 bg-blue-500 text-white rounded-full shadow-lg">
-                IQ Test
-            </button>
+            <div className="fixed top-4 right-4 z-50 animate-float">
+                <button
+                    onClick={() => setShowIQTest(true)}
+                    className="px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white font-bold rounded-lg shadow-xl transform hover:scale-110 transition-all duration-300 flex items-center space-x-2 border-2 border-white/30">
+                    <span className="relative flex h-6 w-6 items-center justify-center">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                        <span className="text-xl">🧠</span>
+                    </span>
+                    <span className="text-shadow-glow">Test Your IQ</span>
+                </button>
+            </div>
+
+            {/* Add a style block for the text glow effect and floating animation */}
+            <style jsx>{`
+                .text-shadow-glow {
+                    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5);
+                }
+                
+                @keyframes float {
+                    0% {
+                        transform: translateY(0px);
+                    }
+                    50% {
+                        transform: translateY(-5px);
+                    }
+                    100% {
+                        transform: translateY(0px);
+                    }
+                }
+                
+                .animate-float {
+                    animation: float 3s ease-in-out infinite;
+                }
+            `}</style>
 
             {showIQTest && <IQTest onClose={() => setShowIQTest(false)} />}
         </div>

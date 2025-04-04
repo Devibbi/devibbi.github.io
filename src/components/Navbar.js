@@ -59,12 +59,17 @@ const Navbar = () => {
                         <span className="text-sm">{label}</span>
                     </li>
                 ))}
+
+                {/* Styled Dark Mode Toggle like other nav items */}
+                <li
+                    onClick={toggleDarkMode}
+                    className={`cursor-pointer transition-all duration-300 hover:scale-110 p-2 
+                        text-white ${isMobile ? 'text-center' : 'w-full text-center mt-8'}`}
+                >
+                    <span className="text-xl mb-1 block">{isDarkMode ? '☀️' : '🌙'}</span>
+                    <span className="text-sm">{isDarkMode ? 'Light' : 'Dark'}</span>
+                </li>
             </ul>
-            <button
-                onClick={toggleDarkMode}
-                className="mt-4 p-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition duration-300">
-                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-            </button>
         </nav>
     );
 };

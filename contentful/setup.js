@@ -70,10 +70,25 @@ async function createContentTypes() {
             ],
         });
 
-        console.log('Content types created successfully!');
+        // IQ Quiz Score Content Type
+        await environment.createContentTypeWithId('iqQuizScore', {
+            name: 'IQ Quiz Score',
+            fields: [
+                { id: 'playerName', name: 'Player Name', type: 'Symbol', required: true },
+                { id: 'score', name: 'Score', type: 'Integer', required: true },
+                { id: 'level', name: 'Achieved Level', type: 'Symbol', required: true },
+                { id: 'date', name: 'Date', type: 'Date', required: true },
+                { id: 'streak', name: 'Highest Streak', type: 'Integer' },
+                { id: 'questionsCorrect', name: 'Questions Answered Correctly', type: 'Integer' },
+                { id: 'totalQuestions', name: 'Total Questions', type: 'Integer' },
+                { id: 'playerIp', name: 'Player IP', type: 'Symbol' },
+            ],
+        });
+
+        console.log('Content types created successfully.');
     } catch (error) {
         console.error('Error creating content types:', error);
     }
 }
 
-createContentTypes(); 
+module.exports = { createContentTypes }; 
