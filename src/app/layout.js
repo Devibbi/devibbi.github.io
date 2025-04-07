@@ -1,6 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import BinaryBackground from "../components/BinaryBackground";
+import Script from "next/script";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,8 +43,30 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <BinaryBackground />
-        {children}
+        {/* Facebook SDK */}
+        <Script strategy="afterInteractive" id="facebook-jssdk">
+          {`
+            window.fbAsyncInit = function() {
+              FB.init({
+                appId: '1234567890', // Replace with your Facebook App ID
+                xfbml: true,
+                version: 'v18.0'
+              });
+            };
+
+            (function(d, s, id) {
+              var js, fjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) return;
+              js = d.createElement(s); js.id = id;
+              js.src = "https://connect.facebook.net/en_US/sdk.js";
+              fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+          `}
+        </Script>
+        <Providers>
+          <BinaryBackground />
+          {children}
+        </Providers>
       </body>
     </html>
   );

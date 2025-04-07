@@ -1,8 +1,8 @@
 // src/components/IQTest.js
-import React from 'react';
+import React, { memo } from 'react';
 import IQTestGame from './IQTestGame';
 
-const IQTest = ({ onClose }) => {
+const IQTest = memo(({ onClose }) => {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-50 animate-fadeIn">
             <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 relative 
@@ -41,6 +41,7 @@ const IQTest = ({ onClose }) => {
             </div>
         </div>
     );
-};
+});
 
+IQTest.displayName = 'IQTest';
 export default IQTest;

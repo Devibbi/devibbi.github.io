@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { getPersonalInfo } from '../utils/contentfulQueries';
 import SocialLinks from './SocialLinks';
 import IQTest from '../components/IQTest';
+import ClientLoginButton from './ClientLoginButton';
 import SectionBinaryBackground from './SectionBinaryBackground';
 import '../globals.css';
 
@@ -70,17 +71,25 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* IQ Test Button */}
-            <div className="fixed top-4 right-4 z-50 animate-float">
-                <button
-                    onClick={() => setShowIQTest(true)}
-                    className="px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white font-bold rounded-lg shadow-xl transform hover:scale-110 transition-all duration-300 flex items-center space-x-2 border-2 border-white/30">
-                    <span className="relative flex h-6 w-6 items-center justify-center">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-                        <span className="text-xl">🧠</span>
-                    </span>
-                    <span className="text-shadow-glow">Test Your IQ</span>
-                </button>
+            {/* Action Buttons Container */}
+            <div className="fixed top-4 right-4 z-50 flex flex-col space-y-3">
+                {/* IQ Test Button */}
+                <div className="animate-float">
+                    <button
+                        onClick={() => setShowIQTest(true)}
+                        className="px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white font-bold rounded-lg shadow-xl transform hover:scale-110 transition-all duration-300 flex items-center space-x-2 border-2 border-white/30">
+                        <span className="relative flex h-6 w-6 items-center justify-center">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                            <span className="text-xl">🧠</span>
+                        </span>
+                        <span className="text-shadow-glow">Test Your IQ</span>
+                    </button>
+                </div>
+                
+                {/* Client Login Button */}
+                <div className="animate-float animation-delay-500">
+                    <ClientLoginButton />
+                </div>
             </div>
 
             {/* Add a style block for the text glow effect and floating animation */}
@@ -103,6 +112,10 @@ const HomePage = () => {
                 
                 .animate-float {
                     animation: float 3s ease-in-out infinite;
+                }
+                
+                .animation-delay-500 {
+                    animation-delay: 0.5s;
                 }
             `}</style>
 
