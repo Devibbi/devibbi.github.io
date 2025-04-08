@@ -10,6 +10,8 @@
     "clean": "rimraf .next"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
     "canvas-confetti": "^1.9.3",
     "contentful": "^11.5.10",
     "contentful-management": "^11.48.1",
@@ -18,7 +20,8 @@
     "next": "15.1.7",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "typescript": "^5.8.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
