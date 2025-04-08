@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, RefreshCw, Send, User } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image'
+import Image from 'next/image';
 
 const AdminDashboard = () => {
   const [clients, setClients] = useState([]);

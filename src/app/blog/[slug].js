@@ -1,6 +1,6 @@
 import React from 'react';
 import { getBlogPostBySlug } from '../../utils/contentfulQueries';
-import Image from 'next/image'
+import Image from 'next/image';
 const BlogPost = ({ post }) => {
     if (!post) {
         return <div>Post not found</div>;

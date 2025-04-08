@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Send, LogOut, User, MessageSquare, Clock, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const ClientDashboard = () => {
   const { data: session, status } = useSession();
