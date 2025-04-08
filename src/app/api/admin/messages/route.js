@@ -9,7 +9,14 @@ const contentfulClient = createClient({
 // Middleware to check admin authentication
 async function checkAdminAuth(request) {
   const adminSession = request.cookies.get('admin_session');
-  return adminSession && adminSession.value === 'true';
+  const accessToken = request.headers.get('Authorization')?.split(' ')[1];  // Extract token from Authorization header
+
+  if (!adminSession || adminSession.value !== 'true' || !accessToken) {
+    return false;
+  }
+
+  // You can add more validation here for the access token, if needed
+  return true;
 }
 
 // Get all client messages
