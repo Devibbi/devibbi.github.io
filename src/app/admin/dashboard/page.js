@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, RefreshCw, Send, User } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image'
 
 const AdminDashboard = () => {
   const [clients, setClients] = useState([]);
@@ -287,7 +288,7 @@ const AdminDashboard = () => {
                     <div className="flex items-center gap-3">
                       <div className="relative">
                         {client.image ? (
-                          <img 
+                          <Image 
                             src={client.image} 
                             alt={client.name || 'Client'}
                             className="w-12 h-12 rounded-full object-cover border border-gray-200"
@@ -326,13 +327,12 @@ const AdminDashboard = () => {
               {/* Client header */}
               <div className="p-4 bg-gray-50 border-b flex items-center gap-3">
                 {selectedClient.image ? (
-                  <img 
+                  <Image
                     src={selectedClient.image} 
                     alt={selectedClient.name}
                     className="w-10 h-10 rounded-full object-cover border border-gray-200"
                     onError={(e) => {
                       e.target.onerror = null; 
-                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"%3E%3Ccircle cx="12" cy="8" r="5"/%3E%3Cpath d="M20 21a8 8 0 0 0-16 0"/%3E%3C/svg%3E';
                     }}
                   />
                 ) : (
