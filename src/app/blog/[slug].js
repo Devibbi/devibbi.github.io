@@ -9,7 +9,7 @@ const BlogPost = ({ post }) => {
     return (
         <article className="prose mx-auto p-6">
             <h1 className="text-4xl font-bold">{post.title}</h1>
-            <img src={post.featuredImage} alt={post.title} className="w-full h-auto rounded-lg" />
+            <Image src={post.featuredImage} alt={post.title} className="w-full h-auto rounded-lg" />
             <p className="text-gray-600">{new Date(post.publishDate).toLocaleDateString()}</p>
             <div className="mt-4" dangerouslySetInnerHTML={{ __html: post.content }} />
         </article>

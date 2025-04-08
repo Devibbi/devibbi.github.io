@@ -195,7 +195,7 @@ const ClientDashboard = () => {
         {/* User info */}
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 mb-4 shadow-xl flex items-center">
           {session?.user?.image ? (
-            <img 
+            <Image 
               src={session.user.image} 
               alt={session.user.name} 
               className="w-10 h-10 rounded-full border-2 border-white/50 mr-3"
