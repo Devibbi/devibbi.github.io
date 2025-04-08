@@ -7,6 +7,8 @@ import SectionBinaryBackground from "./SectionBinaryBackground";
 
 const Skills = () => {
     const [skillsData, setSkillsData] = useState([]);
+
+    
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
