@@ -32,10 +32,42 @@ export async function GET(request) {
     });
     
     // Format the messages
-    const messages = entries.items.map(entry => {
-      const clientEntry = entry.fields.client?.['en-US'] 
-        ? entries.includes.Entry.find(e => e.sys.id === entry.fields.client['en-US'].sys.id)
-        : null;
+    const messagesPromises = entries.items.map(async (entry) => {
+      let clientData = null;
+      
+      // Check if client reference exists
+      if (entry.fields.client?.['en-US']) {
+        const clientId = entry.fields.client['en-US'].sys.id;
+        
+        // Check if includes exists and has Entry array
+        if (entries.includes && Array.isArray(entries.includes.Entry)) {
+          const clientEntry = entries.includes.Entry.find(e => e.sys.id === clientId);
+          if (clientEntry) {
+            clientData = {
+              id: clientEntry.sys.id,
+              name: clientEntry.fields.name?.['en-US'] || '',
+              email: clientEntry.fields.email?.['en-US'] || '',
+              image: clientEntry.fields.image?.['en-US'] || '',
+              provider: clientEntry.fields.provider?.['en-US'] || '',
+            };
+          }
+        } else {
+          // If includes.Entry is not available, fetch the client entry directly
+          try {
+            const clientEntry = await environment.getEntry(clientId);
+            clientData = {
+              id: clientEntry.sys.id,
+              name: clientEntry.fields.name?.['en-US'] || '',
+              email: clientEntry.fields.email?.['en-US'] || '',
+              image: clientEntry.fields.image?.['en-US'] || '',
+              provider: clientEntry.fields.provider?.['en-US'] || '',
+            };
+          } catch (error) {
+            console.error(`Error fetching client ${clientId}:`, error);
+            clientData = { id: clientId };
+          }
+        }
+      }
         
       return {
         id: entry.sys.id,
@@ -43,17 +75,37 @@ export async function GET(request) {
         message: entry.fields.message?.['en-US'] || '',
         createdAt: entry.fields.createdAt?.['en-US'] || '',
         read: entry.fields.read?.['en-US'] || false,
-        client: clientEntry ? {
-          id: clientEntry.sys.id,
-          name: clientEntry.fields.name?.['en-US'] || '',
-          email: clientEntry.fields.email?.['en-US'] || '',
-          image: clientEntry.fields.image?.['en-US'] || '',
-          provider: clientEntry.fields.provider?.['en-US'] || '',
-        } : null,
+        client: clientData,
       };
     });
     
-    return NextResponse.json({ messages });
+    // Resolve all promises
+    const messages = await Promise.all(messagesPromises);
+    
+    // Ensure all client data is properly fetched
+    const resolvedMessages = await Promise.all(messages.map(async (message) => {
+      if (message.client && message.client.id && (!message.client.name || message.client.name === '')) {
+        try {
+          const clientEntry = await environment.getEntry(message.client.id);
+          return {
+            ...message,
+            client: {
+              id: clientEntry.sys.id,
+              name: clientEntry.fields.name?.['en-US'] || 'Unknown',
+              email: clientEntry.fields.email?.['en-US'] || '',
+              image: clientEntry.fields.image?.['en-US'] || '',
+              provider: clientEntry.fields.provider?.['en-US'] || '',
+            }
+          };
+        } catch (error) {
+          console.error(`Error fetching client ${message.client.id}:`, error);
+          return message;
+        }
+      }
+      return message;
+    }));
+    
+    return NextResponse.json({ messages: resolvedMessages });
   } catch (error) {
     console.error('Error fetching messages:', error);
     return NextResponse.json({ message: 'Error fetching messages' }, { status: 500 });
@@ -87,8 +139,24 @@ export async function PATCH(request) {
     };
     
     // Update the entry
-    await entry.update();
-    await entry.publish();
+    const updatedEntry = await entry.update();
+    
+    try {
+      // Try to publish the entry
+      await updatedEntry.publish();
+    } catch (publishError) {
+      // If there's a version conflict, get the latest version and try again
+      if (publishError.status === 409) {
+        const latestEntry = await environment.getEntry(messageId);
+        latestEntry.fields.read = {
+          'en-US': read !== undefined ? read : true,
+        };
+        const latestUpdatedEntry = await latestEntry.update();
+        await latestUpdatedEntry.publish();
+      } else {
+        throw publishError;
+      }
+    }
     
     return NextResponse.json({ success: true });
   } catch (error) {

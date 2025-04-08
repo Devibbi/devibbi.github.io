@@ -52,9 +52,9 @@ const Contact = () => {
     };
 
     return (
-        <section id="contact" className="relative min-h-screen py-20 bg-lightblue-50 dark:bg-gradient-to-b dark:from-gray-500 dark:to-gray-400 overflow-hidden">
+        <section id="contact" className="relative min-h-screen py-20 bg-lightblue-50 dark:bg-gradient-to-b dark:from-gray-600 dark:to-gray-500 overflow-hidden">
             {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/80 via-blue-50/80 to-teal-50/80 dark:bg-gradient-to-b dark:from-gray-500 dark:to-gray-400">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/80 via-blue-50/80 to-teal-50/80 dark:bg-gradient-to-b dark:from-gray-600 dark:to-gray-500">
                 {/* Glow Effects - only visible in light mode */}
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl dark:opacity-0"></div>
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl dark:opacity-0"></div>
@@ -175,7 +175,7 @@ const Contact = () => {
                 {/* Social Links */}
                 {contactInfo && (
                     <div className="mt-16 text-center animate-fadeIn" style={{ animationDelay: "200ms" }}>
-                        <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-teal-600 dark:from-blue-600 dark:to-green-600 mb-6">
+                        <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-teal-600 dark:from-green-500 dark:to-blue-300 mb-6">
                             Connect with Me
                         </h3>
                         <div className="flex justify-center space-x-6">

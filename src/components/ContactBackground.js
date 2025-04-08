@@ -62,8 +62,8 @@ const ContactBackground = () => {
                     <span className="text-indigo-800 text-sm font-mono">contact@yourname.dev</span>
                 </div>
 
-                <div className="contact-element animate-float absolute top-[80%] left-[45%] bg-gradient-to-r from-blue-100 to-white px-4 py-2 rounded-lg opacity-90 -rotate-2 shadow-lg border border-blue-200/50">
-                    <span className="text-blue-800 text-sm font-mono">www.yourportfolio.com</span>
+                <div className="contact-element animate-float absolute top-[95%] left-[45%] bg-gradient-to-r from-blue-100 to-white px-4 py-2 rounded-lg opacity-90 -rotate-2 shadow-lg border border-blue-200/50">
+                    <span className="text-blue-800 text-sm font-mono">www.Devibbi.com</span>
                 </div>
 
                 <div className="contact-element animate-float-delayed absolute top-[25%] left-[80%] bg-gradient-to-r from-teal-100 to-white px-4 py-2 rounded-lg opacity-90 rotate-2 shadow-lg border border-teal-200/50">

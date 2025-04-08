@@ -16,7 +16,7 @@ const Blog = async () => {
     return (
         <section id="blog" className="min-h-screen relative py-20 overflow-hidden">
             {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/80 via-pink-50/80 to-blue-50/80 dark:bg-gradient-to-b dark:from-gray-700 dark:to-gray-500">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/80 via-pink-50/80 to-blue-50/80 dark:bg-gradient-to-b dark:from-gray-700 dark:to-gray-600">
             </div>
 
             {/* Add BlogBackground directly in the section */}

@@ -47,7 +47,7 @@ const Navbar = () => {
 
     return (
         <nav className={`${isMobile ? 'fixed bottom-0 left-0 w-full py-2' : 'fixed top-0 left-0 h-full w-24 py-8'} 
-            bg-gradient-to-r from-green-600 to-green-700 dark:from-gray-400 dark:to-gray-900 text-white shadow-xl z-50`}>
+            bg-gradient-to-r from-green-600 to-green-700 dark:bg-gradient-to-t dark:from-gray-400 dark:to-gray-900 text-white shadow-xl z-50`}>
             <ul className={`flex ${isMobile ? 'flex-row justify-around' : 'flex-col items-center space-y-8'}`}>
                 {navItems.map(({ id, icon, label }) => (
                     <li key={id}
