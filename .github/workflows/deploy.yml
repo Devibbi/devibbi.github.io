@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build
+        env:
+          CONTENTFUL_SPACE_ID: ${{ secrets.CONTENTFUL_SPACE_ID }}
+          CONTENTFUL_ACCESS_TOKEN: ${{ secrets.CONTENTFUL_ACCESS_TOKEN }}
+          CONTENTFUL_MANAGEMENT_TOKEN: ${{ secrets.CONTENTFUL_MANAGEMENT_TOKEN }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          GITHUB_ID: ${{ secrets.GITHUB_ID }}
+          GITHUB_SECRET: ${{ secrets.GITHUB_SECRET }}
+          GOOGLE_ID: ${{ secrets.GOOGLE_ID }}
+          GOOGLE_SECRET: ${{ secrets.GOOGLE_SECRET }}
+        run: yarn build
+
+      - name: Deploy
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .next
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

@@ -19,8 +19,24 @@ async function checkAdminAuth(request) {
   return true;
 }
 
+async function checkEnvVars() {
+  const requiredEnvVars = ['CONTENTFUL_MANAGEMENT_TOKEN', 'CONTENTFUL_SPACE_ID'];
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    return NextResponse.json(
+      { error: `Missing env vars: ${missingVars.join(', ')}` },
+      { status: 500 }
+    );
+  }
+  return null;
+}
+
 // Get all client messages
 export async function GET(request) {
+  const envError = await checkEnvVars();
+  if (envError) return envError;
+
   try {
     // Check admin authentication
     const isAdmin = await checkAdminAuth(request);
@@ -121,6 +137,9 @@ export async function GET(request) {
 
 // Mark a message as read
 export async function PATCH(request) {
+  const envError = await checkEnvVars();
+  if (envError) return envError;
+
   try {
     // Check admin authentication
     const isAdmin = await checkAdminAuth(request);
@@ -174,6 +193,9 @@ export async function PATCH(request) {
 
 // Send a response to a client
 export async function POST(request) {
+  const envError = await checkEnvVars();
+  if (envError) return envError;
+
   try {
     // Check admin authentication
     const isAdmin = await checkAdminAuth(request);
