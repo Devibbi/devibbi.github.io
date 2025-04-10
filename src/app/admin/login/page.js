@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 const AdminLoginPage = () => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
@@ -19,7 +20,7 @@ const AdminLoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       });
       
       const data = await response.json();
@@ -27,7 +28,7 @@ const AdminLoginPage = () => {
       if (response.ok) {
         router.push('/admin/dashboard');
       } else {
-        setError(data.message || 'Invalid password');
+        setError(data.error || 'Invalid credentials');
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
@@ -46,7 +47,7 @@ const AdminLoginPage = () => {
         
         <div className="text-center mb-8 mt-6">
           <h1 className="text-3xl font-bold mb-2">Admin Access</h1>
-          <p className="text-white/70">Enter your password to access the admin dashboard</p>
+          <p className="text-white/70">Enter your credentials to access the admin dashboard</p>
         </div>
         
         <form onSubmit={handleLogin} className="space-y-4">
@@ -55,6 +56,20 @@ const AdminLoginPage = () => {
               {error}
             </div>
           )}
+          
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-white/70 mb-1">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
           
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-white/70 mb-1">

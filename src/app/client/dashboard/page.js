@@ -198,8 +198,11 @@ const ClientDashboard = () => {
           {session?.user?.image ? (
             <Image 
               src={session.user.image} 
-              alt={session.user.name} 
-              className="w-10 h-10 rounded-full border-2 border-white/50 mr-3"
+              alt="User profile"
+              width={96} 
+              height={96}
+              unoptimized={true}
+              className="rounded-full border-2 border-white shadow-lg"
             />
           ) : (
             <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center mr-3">

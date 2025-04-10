@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from 'contentful-management';
+import { cookies } from 'next/headers';
 
 // Initialize Contentful Management client
 const contentfulClient = createClient({
@@ -8,7 +9,8 @@ const contentfulClient = createClient({
 
 // Middleware to check admin authentication
 async function checkAdminAuth(request) {
-  const adminSession = request.cookies.get('admin_session');
+  const cookieStore = cookies();
+  const adminSession = await cookieStore.get('admin_session');
   const accessToken = request.headers.get('Authorization')?.split(' ')[1];  // Extract token from Authorization header
 
   if (!adminSession || adminSession.value !== 'true' || !accessToken) {
@@ -38,12 +40,6 @@ export async function GET(request) {
   if (envError) return envError;
 
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth(request);
-    if (!isAdmin) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
-
     const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
     const environment = await space.getEnvironment('master');
     
@@ -128,7 +124,17 @@ export async function GET(request) {
       return message;
     }));
     
-    return NextResponse.json({ messages: resolvedMessages });
+    // Extract unique clients from messages
+    const clientsMap = new Map();
+    resolvedMessages.forEach(message => {
+      if (message.client && message.client.id) {
+        clientsMap.set(message.client.id, message.client);
+      }
+    });
+    
+    const clients = Array.from(clientsMap.values());
+
+    return NextResponse.json({ messages: resolvedMessages, clients });
   } catch (error) {
     console.error('Error fetching messages:', error);
     return NextResponse.json({ message: 'Error fetching messages' }, { status: 500 });

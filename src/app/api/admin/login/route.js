@@ -1,28 +1,29 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {
-  try {
-    const { password } = await request.json();
-    
-    // Replace this with your actual admin password or use environment variable
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
-    
-    if (password === adminPassword) {
-      // Set a secure HTTP-only cookie to maintain admin session
-      const response = NextResponse.json({ success: true });
-      response.cookies.set('admin_session', 'true', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 24, // 1 day
-        path: '/',
-      });
-      
-      return response;
-    } else {
-      return NextResponse.json({ message: 'Invalid password' }, { status: 401 });
-    }
-  } catch (error) {
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+  const { username, password } = await request.json();
+  
+  if (username !== process.env.ADMIN_USERNAME || 
+      password !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json(
+      { error: 'Invalid credentials' },
+      { status: 401 }
+    );
   }
+
+  const response = NextResponse.json(
+    { success: true },
+    { status: 200 }
+  );
+
+  response.cookies.set({
+    name: 'admin_session',
+    value: 'true',
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 60 * 60 * 24,
+    path: '/',
+  });
+
+  return response;
 }

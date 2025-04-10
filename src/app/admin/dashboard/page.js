@@ -7,8 +7,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const AdminDashboard = () => {
-  const [clients, setClients] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedClient, setSelectedClient] = useState(null);
@@ -27,56 +27,26 @@ const AdminDashboard = () => {
   // Fetch clients and messages
   const fetchData = async () => {
     try {
-      setLoading(true);
-      const response = await fetch('/api/admin/messages');
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/admin/login');
-          return;
-        }
-        throw new Error('Failed to fetch messages');
-      }
-      
-      const data = await response.json();
-      const messagesData = data.messages || [];
-      
-      // Extract unique clients from messages
-      const uniqueClients = {};
-      messagesData.forEach(msg => {
-        if (msg.client && msg.client.id) {
-          uniqueClients[msg.client.id] = {
-            id: msg.client.id,
-            name: msg.client.name || 'Unknown',
-            email: msg.client.email || '',
-            image: msg.client.image || '',
-            provider: msg.client.provider || '',
-            lastMessage: msg.createdAt,
-            unreadCount: uniqueClients[msg.client.id]?.unreadCount || 0
-          };
-          
-          if (!msg.read) {
-            uniqueClients[msg.client.id].unreadCount += 1;
-          }
-        }
+      const response = await fetch('/api/admin/messages', {
+        credentials: 'include'
       });
       
-      // Convert to array and sort by last message date
-      const clientsArray = Object.values(uniqueClients).sort((a, b) => 
-        new Date(b.lastMessage) - new Date(a.lastMessage)
-      );
-      
-      setClients(clientsArray);
-      setMessages(messagesData);
-      
-      // If a client is selected, mark their messages as read
-      if (selectedClient) {
-        messagesData
-          .filter(msg => msg.client?.id === selectedClient.id && !msg.read)
-          .forEach(msg => markAsRead(msg.id));
+      if (response.status === 401) {
+        router.push('/admin/login');
+        return;
       }
+
+      const data = await response.json();
+      setMessages(data.messages || []);
+      
+      // If no clients array, extract from messages
+      const clientsData = data.clients?.length > 0 
+        ? data.clients 
+        : [...new Map(data.messages.map(m => [m.client?.id, m.client])).values()];
+      
+      setClients(clientsData.filter(c => c));
     } catch (error) {
-      setError('Error loading messages. Please try again.');
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
@@ -273,7 +243,7 @@ const AdminDashboard = () => {
               <div className="p-4 text-red-500 text-center">
                 {error}
               </div>
-            ) : clients.length === 0 ? (
+            ) : (clients?.length || 0) === 0 ? (
               <div className="p-8 text-center text-gray-500">
                 No clients yet.
               </div>
@@ -287,20 +257,15 @@ const AdminDashboard = () => {
                   >
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        {client.image ? (
-                          <Image 
-                            src={client.image} 
-                            alt={client.name || 'Client'}
-                            className="w-12 h-12 rounded-full object-cover border border-gray-200"
-                            onError={(e) => {
-                              e.target.onerror = null; 
-                              e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"%3E%3Ccircle cx="12" cy="8" r="5"/%3E%3Cpath d="M20 21a8 8 0 0 0-16 0"/%3E%3C/svg%3E';
-                            }}
+                        {client.image && (
+                          <Image
+                            src={client.image}
+                            alt={`${client.name}'s avatar`}
+                            width={40}
+                            height={40}
+                            className="rounded-full"
+                            unoptimized={true}
                           />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                            <User className="w-6 h-6 text-gray-500" />
-                          </div>
                         )}
                         {client.unreadCount > 0 && (
                           <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -326,19 +291,15 @@ const AdminDashboard = () => {
             <>
               {/* Client header */}
               <div className="p-4 bg-gray-50 border-b flex items-center gap-3">
-                {selectedClient.image ? (
+                {selectedClient.image && (
                   <Image
-                    src={selectedClient.image} 
-                    alt={selectedClient.name}
-                    className="w-10 h-10 rounded-full object-cover border border-gray-200"
-                    onError={(e) => {
-                      e.target.onerror = null; 
-                    }}
+                    src={selectedClient.image}
+                    alt={`${selectedClient.name}'s avatar`}
+                    width={40}
+                    height={40}
+                    className="rounded-full"
+                    unoptimized={true}
                   />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                    <User className="w-5 h-5 text-gray-500" />
-                  </div>
                 )}
                 <div>
                   <h2 className="font-semibold">{selectedClient.name}</h2>
