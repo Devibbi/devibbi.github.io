@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, RefreshCw, Send, User } from 'lucide-react';
 import Link from 'next/link';
@@ -25,7 +25,7 @@ const AdminDashboard = () => {
   };
 
   // Fetch clients and messages
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/messages', {
         credentials: 'include'
@@ -50,7 +50,7 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Mark message as read
   const markAsRead = async (messageId, isRead = true) => {
@@ -152,7 +152,7 @@ const AdminDashboard = () => {
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, []);
+  }, [fetchData]);
   
   // Scroll to bottom when messages change or client is selected
   useEffect(() => {

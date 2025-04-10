@@ -60,7 +60,7 @@ const IQTestGame = () => {
     }, [score]);
 
     // Full question bank
-    const allQuestions = [
+    const allQuestions = useMemo(() => [
         // Your existing questions array
         {
             question: "If you rearrange the letters 'EINORST', what is the longest word you can create?",
@@ -102,7 +102,7 @@ const IQTestGame = () => {
             explanation: "From the given premises, we can't determine if roses are part of the flowers that fade quickly.",
             difficulty: "moderate"
         }
-    ];
+    ], []);
 
     // Load high scores and last player name from localStorage and Contentful on mount
     useEffect(() => {
@@ -244,7 +244,7 @@ const IQTestGame = () => {
         setStreak(0);
         setCorrectAnswers(0);
         setGameState('game');
-    }, []);
+    }, [allQuestions]);
 
     // Create a separate Timer component to isolate re-renders
     const Timer = memo(({ timeLeft, isActive, onTimeUp }) => {

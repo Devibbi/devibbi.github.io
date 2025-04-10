@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Send, LogOut, User, MessageSquare, Clock, ArrowLeft } from 'lucide-react';
@@ -24,7 +24,7 @@ const ClientDashboard = () => {
     }
   }, [status, router]);
 
-  const fetchConversation = async () => {
+  const fetchConversation = useCallback(async () => {
     if (status !== 'authenticated') return;
     
     setLoading(true);
@@ -71,7 +71,7 @@ const ClientDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [status]);
 
   useEffect(() => {
     fetchConversation();
@@ -86,7 +86,7 @@ const ClientDashboard = () => {
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, [status]);
+  }, [fetchConversation]);
 
   useEffect(() => {
     const scrollToBottom = () => {
