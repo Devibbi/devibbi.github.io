@@ -1,16 +1,15 @@
 import { getServerSession, NextResponse } from 'next-auth';
 import { createClient } from 'contentful';
 
-// Initialize Contentful client with proper error handling
-const contentfulClient = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN || ''
-});
-
-// Add environment variable check
-if (!process.env.CONTENTFUL_ACCESS_TOKEN) {
-  throw new Error('Contentful access token is not configured');
-}
+const getContentfulClient = () => {
+  if (!process.env.CONTENTFUL_SPACE_ID || !process.env.CONTENTFUL_ACCESS_TOKEN) {
+    throw new Error('Contentful environment variables not configured');
+  }
+  return createClient({
+    space: process.env.CONTENTFUL_SPACE_ID,
+    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
+  });
+};
 
 // Get client messages
 export async function GET(request) {
@@ -21,7 +20,7 @@ export async function GET(request) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get client messages from Contentful
+    const contentfulClient = getContentfulClient();
     const space = await contentfulClient.getSpace();
     const environment = await space.getEnvironment('master');
 
@@ -68,6 +67,7 @@ export async function POST(request) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
+    const contentfulClient = getContentfulClient();
     const { subject, message } = await request.json();
     
     if (!message) {
