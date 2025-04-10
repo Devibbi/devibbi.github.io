@@ -1,12 +1,9 @@
 import NextAuth from 'next-auth';
-import GithubProvider from 'next-auth/providers/github';
+import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
-import RedditProvider from 'next-auth/providers/reddit';
 import { createClient } from 'contentful-management';
 
 // Initialize Contentful Management client
-
-
 const contentfulClient = createClient({
   accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN
 });
@@ -16,14 +13,12 @@ async function saveClientToContentful(user) {
     const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
     const environment = await space.getEnvironment('master');
     
-    // Check if client exists
     const entries = await environment.getEntries({
       content_type: 'client',
       'fields.email': user.email
     });
 
     if (entries.items.length === 0) {
-      // Create new client
       const entry = await environment.createEntry('client', {
         fields: {
           name: { 'en-US': user.name },

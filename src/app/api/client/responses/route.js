@@ -1,20 +1,23 @@
 import { getServerSession } from 'next-auth';
 import { createClient } from 'contentful-management';
 
-// Initialize Contentful Management client
-const contentfulClient = createClient({
-  accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
-});
+const getContentfulClient = () => {
+  if (!process.env.CONTENTFUL_SPACE_ID || !process.env.CONTENTFUL_MANAGEMENT_TOKEN) {
+    throw new Error('Contentful environment variables not configured');
+  }
+  return createClient({
+    accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN
+  });
+};
 
 export async function GET(request) {
   try {
-    // Check authentication
+    const contentfulClient = getContentfulClient();
     const session = await getServerSession();
     if (!session || !session.user) {
       return Response.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get client responses from Contentful
     const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
     const environment = await space.getEnvironment('master');
 
@@ -48,6 +51,9 @@ export async function GET(request) {
     return Response.json({ responses });
   } catch (error) {
     console.error('Error fetching responses:', error);
-    return Response.json({ message: 'Failed to fetch responses' }, { status: 500 });
+    return Response.json(
+      { error: error.message || 'Failed to fetch responses' },
+      { status: 500 }
+    );
   }
 }
