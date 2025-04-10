@@ -1,10 +1,18 @@
 import { NextResponse } from 'next/server';
 import { createClient } from 'contentful-management';
 
-// Initialize Contentful Management client
-const contentfulClient = createClient({
-  accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
-});
+// Initialize Contentful Management client with error handling
+let contentfulClient;
+try {
+  if (!process.env.CONTENTFUL_MANAGEMENT_TOKEN) {
+    throw new Error('Missing CONTENTFUL_MANAGEMENT_TOKEN');
+  }
+  contentfulClient = createClient({
+    accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
+  });
+} catch (error) {
+  console.error('Contentful client initialization error:', error.message);
+}
 
 // Middleware to check admin authentication
 async function checkAdminAuth(request) {
@@ -26,6 +34,10 @@ export async function GET(request) {
     const isAdmin = await checkAdminAuth(request);
     if (!isAdmin) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!contentfulClient) {
+      return NextResponse.json({ message: 'Contentful client not initialized' }, { status: 500 });
     }
 
     const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
@@ -128,6 +140,10 @@ export async function PATCH(request) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
+    if (!contentfulClient) {
+      return NextResponse.json({ message: 'Contentful client not initialized' }, { status: 500 });
+    }
+
     const { messageId, read } = await request.json();
     
     if (!messageId) {
@@ -179,6 +195,10 @@ export async function POST(request) {
     const isAdmin = await checkAdminAuth(request);
     if (!isAdmin) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!contentfulClient) {
+      return NextResponse.json({ message: 'Contentful client not initialized' }, { status: 500 });
     }
 
     const { clientId, subject, message } = await request.json();
