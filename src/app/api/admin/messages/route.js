@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
-import { createClient } from 'contentful-management';
+import { createClient } from 'contentful';
 import { cookies } from 'next/headers';
 
-// Initialize Contentful Management client
-const contentfulClient = createClient({
-  accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
-});
+// Initialize Contentful client with error handling
+const getContentfulClient = () => {
+  if (!process.env.CONTENTFUL_SPACE_ID || !process.env.CONTENTFUL_ACCESS_TOKEN) {
+    throw new Error('Contentful environment variables not configured');
+  }
+  return createClient({
+    space: process.env.CONTENTFUL_SPACE_ID,
+    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
+  });
+};
 
 // Middleware to check admin authentication
 async function checkAdminAuth(request) {
@@ -22,7 +28,7 @@ async function checkAdminAuth(request) {
 }
 
 async function checkEnvVars() {
-  const requiredEnvVars = ['CONTENTFUL_MANAGEMENT_TOKEN', 'CONTENTFUL_SPACE_ID'];
+  const requiredEnvVars = ['CONTENTFUL_SPACE_ID', 'CONTENTFUL_ACCESS_TOKEN'];
   const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
   
   if (missingVars.length > 0) {
@@ -36,218 +42,242 @@ async function checkEnvVars() {
 
 // Get all client messages
 export async function GET(request) {
-  const envError = await checkEnvVars();
-  if (envError) return envError;
-
   try {
-    const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
-    const environment = await space.getEnvironment('master');
-    
-    // Get all client message entries
-    const entries = await environment.getEntries({
-      content_type: 'clientMessage',
-      order: '-fields.createdAt',
-      include: 2, // Include linked entries (clients)
-    });
-    
-    // Format the messages
-    const messagesPromises = entries.items.map(async (entry) => {
-      let clientData = null;
+    const contentfulClient = getContentfulClient();
+    const envError = await checkEnvVars();
+    if (envError) return envError;
+
+    try {
+      const space = await contentfulClient.getSpace();
+      const environment = await space.getEnvironment('master');
       
-      // Check if client reference exists
-      if (entry.fields.client?.['en-US']) {
-        const clientId = entry.fields.client['en-US'].sys.id;
+      // Get all client message entries
+      const entries = await environment.getEntries({
+        content_type: 'clientMessage',
+        order: '-fields.createdAt',
+        include: 2, // Include linked entries (clients)
+      });
+      
+      // Format the messages
+      const messagesPromises = entries.items.map(async (entry) => {
+        let clientData = null;
         
-        // Check if includes exists and has Entry array
-        if (entries.includes && Array.isArray(entries.includes.Entry)) {
-          const clientEntry = entries.includes.Entry.find(e => e.sys.id === clientId);
-          if (clientEntry) {
-            clientData = {
-              id: clientEntry.sys.id,
-              name: clientEntry.fields.name?.['en-US'] || '',
-              email: clientEntry.fields.email?.['en-US'] || '',
-              image: clientEntry.fields.image?.['en-US'] || '',
-              provider: clientEntry.fields.provider?.['en-US'] || '',
-            };
+        // Check if client reference exists
+        if (entry.fields.client?.['en-US']) {
+          const clientId = entry.fields.client['en-US'].sys.id;
+          
+          // Check if includes exists and has Entry array
+          if (entries.includes && Array.isArray(entries.includes.Entry)) {
+            const clientEntry = entries.includes.Entry.find(e => e.sys.id === clientId);
+            if (clientEntry) {
+              clientData = {
+                id: clientEntry.sys.id,
+                name: clientEntry.fields.name?.['en-US'] || '',
+                email: clientEntry.fields.email?.['en-US'] || '',
+                image: clientEntry.fields.image?.['en-US'] || '',
+                provider: clientEntry.fields.provider?.['en-US'] || '',
+              };
+            }
+          } else {
+            // If includes.Entry is not available, fetch the client entry directly
+            try {
+              const clientEntry = await environment.getEntry(clientId);
+              clientData = {
+                id: clientEntry.sys.id,
+                name: clientEntry.fields.name?.['en-US'] || '',
+                email: clientEntry.fields.email?.['en-US'] || '',
+                image: clientEntry.fields.image?.['en-US'] || '',
+                provider: clientEntry.fields.provider?.['en-US'] || '',
+              };
+            } catch (error) {
+              console.error(`Error fetching client ${clientId}:`, error);
+              clientData = { id: clientId };
+            }
           }
-        } else {
-          // If includes.Entry is not available, fetch the client entry directly
+        }
+        
+        return {
+          id: entry.sys.id,
+          subject: entry.fields.subject?.['en-US'] || '',
+          message: entry.fields.message?.['en-US'] || '',
+          createdAt: entry.fields.createdAt?.['en-US'] || '',
+          read: entry.fields.read?.['en-US'] || false,
+          client: clientData,
+        };
+      });
+      
+      // Resolve all promises
+      const messages = await Promise.all(messagesPromises);
+      
+      // Ensure all client data is properly fetched
+      const resolvedMessages = await Promise.all(messages.map(async (message) => {
+        if (message.client && message.client.id && (!message.client.name || message.client.name === '')) {
           try {
-            const clientEntry = await environment.getEntry(clientId);
-            clientData = {
-              id: clientEntry.sys.id,
-              name: clientEntry.fields.name?.['en-US'] || '',
-              email: clientEntry.fields.email?.['en-US'] || '',
-              image: clientEntry.fields.image?.['en-US'] || '',
-              provider: clientEntry.fields.provider?.['en-US'] || '',
+            const clientEntry = await environment.getEntry(message.client.id);
+            return {
+              ...message,
+              client: {
+                id: clientEntry.sys.id,
+                name: clientEntry.fields.name?.['en-US'] || 'Unknown',
+                email: clientEntry.fields.email?.['en-US'] || '',
+                image: clientEntry.fields.image?.['en-US'] || '',
+                provider: clientEntry.fields.provider?.['en-US'] || '',
+              }
             };
           } catch (error) {
-            console.error(`Error fetching client ${clientId}:`, error);
-            clientData = { id: clientId };
+            console.error(`Error fetching client ${message.client.id}:`, error);
+            return message;
           }
         }
-      }
-        
-      return {
-        id: entry.sys.id,
-        subject: entry.fields.subject?.['en-US'] || '',
-        message: entry.fields.message?.['en-US'] || '',
-        createdAt: entry.fields.createdAt?.['en-US'] || '',
-        read: entry.fields.read?.['en-US'] || false,
-        client: clientData,
-      };
-    });
-    
-    // Resolve all promises
-    const messages = await Promise.all(messagesPromises);
-    
-    // Ensure all client data is properly fetched
-    const resolvedMessages = await Promise.all(messages.map(async (message) => {
-      if (message.client && message.client.id && (!message.client.name || message.client.name === '')) {
-        try {
-          const clientEntry = await environment.getEntry(message.client.id);
-          return {
-            ...message,
-            client: {
-              id: clientEntry.sys.id,
-              name: clientEntry.fields.name?.['en-US'] || 'Unknown',
-              email: clientEntry.fields.email?.['en-US'] || '',
-              image: clientEntry.fields.image?.['en-US'] || '',
-              provider: clientEntry.fields.provider?.['en-US'] || '',
-            }
-          };
-        } catch (error) {
-          console.error(`Error fetching client ${message.client.id}:`, error);
-          return message;
+        return message;
+      }));
+      
+      // Extract unique clients from messages
+      const clientsMap = new Map();
+      resolvedMessages.forEach(message => {
+        if (message.client && message.client.id) {
+          clientsMap.set(message.client.id, message.client);
         }
-      }
-      return message;
-    }));
-    
-    // Extract unique clients from messages
-    const clientsMap = new Map();
-    resolvedMessages.forEach(message => {
-      if (message.client && message.client.id) {
-        clientsMap.set(message.client.id, message.client);
-      }
-    });
-    
-    const clients = Array.from(clientsMap.values());
+      });
+      
+      const clients = Array.from(clientsMap.values());
 
-    return NextResponse.json({ messages: resolvedMessages, clients });
+      return NextResponse.json({ messages: resolvedMessages, clients });
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      return NextResponse.json({ message: 'Error fetching messages' }, { status: 500 });
+    }
   } catch (error) {
-    console.error('Error fetching messages:', error);
-    return NextResponse.json({ message: 'Error fetching messages' }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || 'Contentful configuration error' },
+      { status: 500 }
+    );
   }
 }
 
 // Mark a message as read
 export async function PATCH(request) {
-  const envError = await checkEnvVars();
-  if (envError) return envError;
-
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth(request);
-    if (!isAdmin) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
+    const contentfulClient = getContentfulClient();
+    const envError = await checkEnvVars();
+    if (envError) return envError;
 
-    const { messageId, read } = await request.json();
-    
-    if (!messageId) {
-      return NextResponse.json({ message: 'Message ID is required' }, { status: 400 });
-    }
-    
-    const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
-    const environment = await space.getEnvironment('master');
-    
-    // Get the message entry
-    const entry = await environment.getEntry(messageId);
-    
-    // Update the read status
-    entry.fields.read = {
-      'en-US': read !== undefined ? read : true,
-    };
-    
-    // Update the entry
-    const updatedEntry = await entry.update();
-    
     try {
-      // Try to publish the entry
-      await updatedEntry.publish();
-    } catch (publishError) {
-      // If there's a version conflict, get the latest version and try again
-      if (publishError.status === 409) {
-        const latestEntry = await environment.getEntry(messageId);
-        latestEntry.fields.read = {
-          'en-US': read !== undefined ? read : true,
-        };
-        const latestUpdatedEntry = await latestEntry.update();
-        await latestUpdatedEntry.publish();
-      } else {
-        throw publishError;
+      // Check admin authentication
+      const isAdmin = await checkAdminAuth(request);
+      if (!isAdmin) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
       }
+
+      const { messageId, read } = await request.json();
+      
+      if (!messageId) {
+        return NextResponse.json({ message: 'Message ID is required' }, { status: 400 });
+      }
+      
+      const space = await contentfulClient.getSpace();
+      const environment = await space.getEnvironment('master');
+      
+      // Get the message entry
+      const entry = await environment.getEntry(messageId);
+      
+      // Update the read status
+      entry.fields.read = {
+        'en-US': read !== undefined ? read : true,
+      };
+      
+      // Update the entry
+      const updatedEntry = await entry.update();
+      
+      try {
+        // Try to publish the entry
+        await updatedEntry.publish();
+      } catch (publishError) {
+        // If there's a version conflict, get the latest version and try again
+        if (publishError.status === 409) {
+          const latestEntry = await environment.getEntry(messageId);
+          latestEntry.fields.read = {
+            'en-US': read !== undefined ? read : true,
+          };
+          const latestUpdatedEntry = await latestEntry.update();
+          await latestUpdatedEntry.publish();
+        } else {
+          throw publishError;
+        }
+      }
+      
+      return NextResponse.json({ success: true });
+    } catch (error) {
+      console.error('Error updating message:', error);
+      return NextResponse.json({ message: 'Error updating message' }, { status: 500 });
     }
-    
-    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error updating message:', error);
-    return NextResponse.json({ message: 'Error updating message' }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || 'Contentful configuration error' },
+      { status: 500 }
+    );
   }
 }
 
 // Send a response to a client
 export async function POST(request) {
-  const envError = await checkEnvVars();
-  if (envError) return envError;
-
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth(request);
-    if (!isAdmin) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
+    const contentfulClient = getContentfulClient();
+    const envError = await checkEnvVars();
+    if (envError) return envError;
 
-    const { clientId, subject, message } = await request.json();
-    
-    if (!clientId || !subject || !message) {
-      return NextResponse.json({ message: 'Client ID, subject, and message are required' }, { status: 400 });
-    }
-    
-    const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
-    const environment = await space.getEnvironment('master');
-    
-    // Create a new admin response entry
-    const entry = await environment.createEntry('adminResponse', {
-      fields: {
-        subject: {
-          'en-US': subject,
-        },
-        message: {
-          'en-US': message,
-        },
-        client: {
-          'en-US': {
-            sys: {
-              type: 'Link',
-              linkType: 'Entry',
-              id: clientId,
+    try {
+      // Check admin authentication
+      const isAdmin = await checkAdminAuth(request);
+      if (!isAdmin) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      }
+
+      const { clientId, subject, message } = await request.json();
+      
+      if (!clientId || !subject || !message) {
+        return NextResponse.json({ message: 'Client ID, subject, and message are required' }, { status: 400 });
+      }
+      
+      const space = await contentfulClient.getSpace();
+      const environment = await space.getEnvironment('master');
+      
+      // Create a new admin response entry
+      const entry = await environment.createEntry('adminResponse', {
+        fields: {
+          subject: {
+            'en-US': subject,
+          },
+          message: {
+            'en-US': message,
+          },
+          client: {
+            'en-US': {
+              sys: {
+                type: 'Link',
+                linkType: 'Entry',
+                id: clientId,
+              },
             },
           },
+          createdAt: {
+            'en-US': new Date().toISOString(),
+          },
         },
-        createdAt: {
-          'en-US': new Date().toISOString(),
-        },
-      },
-    });
-    
-    // Publish the entry
-    await entry.publish();
-    
-    return NextResponse.json({ success: true, responseId: entry.sys.id });
+      });
+      
+      // Publish the entry
+      await entry.publish();
+      
+      return NextResponse.json({ success: true, responseId: entry.sys.id });
+    } catch (error) {
+      console.error('Error sending response:', error);
+      return NextResponse.json({ message: 'Error sending response' }, { status: 500 });
+    }
   } catch (error) {
-    console.error('Error sending response:', error);
-    return NextResponse.json({ message: 'Error sending response' }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || 'Contentful configuration error' },
+      { status: 500 }
+    );
   }
 }
