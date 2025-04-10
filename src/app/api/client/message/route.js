@@ -1,11 +1,16 @@
-import { getServerSession } from 'next-auth';
+import { getServerSession, NextResponse } from 'next-auth';
 import { createClient } from 'contentful';
 
-// Initialize Contentful Management client
+// Initialize Contentful client with proper error handling
 const contentfulClient = createClient({
   space: process.env.CONTENTFUL_SPACE_ID,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
+  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN || ''
 });
+
+// Add environment variable check
+if (!process.env.CONTENTFUL_ACCESS_TOKEN) {
+  throw new Error('Contentful access token is not configured');
+}
 
 // Get client messages
 export async function GET(request) {
@@ -13,7 +18,7 @@ export async function GET(request) {
     // Check authentication
     const session = await getServerSession();
     if (!session || !session.user) {
-      return Response.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
     // Get client messages from Contentful
@@ -27,7 +32,7 @@ export async function GET(request) {
     });
 
     if (clientEntries.items.length === 0) {
-      return Response.json({ message: 'Client not found' }, { status: 404 });
+      return NextResponse.json({ message: 'Client not found' }, { status: 404 });
     }
 
     const clientEntry = clientEntries.items[0];
@@ -48,10 +53,10 @@ export async function GET(request) {
       read: entry.fields.read?.['en-US'] || false,
     }));
 
-    return Response.json({ messages });
+    return NextResponse.json({ messages });
   } catch (error) {
     console.error('Error fetching messages:', error);
-    return Response.json({ message: 'Failed to fetch messages' }, { status: 500 });
+    return NextResponse.json({ message: 'Failed to fetch messages' }, { status: 500 });
   }
 }
 
@@ -60,12 +65,18 @@ export async function POST(request) {
     // Check authentication
     const session = await getServerSession();
     if (!session || !session.user) {
-      return Response.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse request body
     const { subject, message } = await request.json();
     
+    if (!message) {
+      return NextResponse.json(
+        { error: 'Message is required' },
+        { status: 400 }
+      );
+    }
+
     const space = await contentfulClient.getSpace();
     const environment = await space.getEnvironment('master');
     
@@ -76,7 +87,7 @@ export async function POST(request) {
     });
 
     if (clientEntries.items.length === 0) {
-      return Response.json({ message: 'Client not found' }, { status: 404 });
+      return NextResponse.json({ message: 'Client not found' }, { status: 404 });
     }
 
     const clientEntry = clientEntries.items[0];
@@ -100,11 +111,11 @@ export async function POST(request) {
     });
     
     await entry.publish();
-    return Response.json({ message: 'Message sent successfully' }, { status: 200 });
+    return NextResponse.json({ message: 'Message sent successfully' }, { status: 200 });
     
   } catch (error) {
     console.error('Error sending message:', error);
-    return Response.json(
+    return NextResponse.json(
       { error: error.message || 'Message submission failed' },
       { status: 500 }
     );
