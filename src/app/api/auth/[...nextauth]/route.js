@@ -4,26 +4,13 @@ import GoogleProvider from 'next-auth/providers/google';
 import RedditProvider from 'next-auth/providers/reddit';
 import { createClient } from 'contentful-management';
 
-// Initialize Contentful Management client with error handling
-let contentfulClient;
-try {
-  if (!process.env.CONTENTFUL_MANAGEMENT_TOKEN) {
-    throw new Error('Missing CONTENTFUL_MANAGEMENT_TOKEN');
-  }
-  contentfulClient = createClient({
-    accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
-  });
-} catch (error) {
-  console.error('Contentful client initialization error:', error.message);
-}
+// Initialize Contentful Management client
+const contentfulClient = createClient({
+  accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
+});
 
 // Function to save client data to Contentful
 async function saveClientToContentful(user) {
-  if (!contentfulClient || !process.env.CONTENTFUL_SPACE_ID) {
-    console.warn('Skipping Contentful save - client not initialized');
-    return;
-  }
-  
   try {
     const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
     const environment = await space.getEnvironment('master');
@@ -73,6 +60,7 @@ async function saveClientToContentful(user) {
     return entry;
   } catch (error) {
     console.error('Error saving client to Contentful:', error);
+    return null;
   }
 }
 

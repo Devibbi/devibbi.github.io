@@ -1,29 +1,32 @@
 import { createClient } from 'contentful';
-import getConfig from 'next/config';
 
-const { publicRuntimeConfig } = getConfig();
-
-// Create the client only if we have required config
+// Create the client only if we're in a browser OR if the required environment variables are available
 let client = null;
 let previewClient = null;
 
-try {
-  if (publicRuntimeConfig.CONTENTFUL_SPACE_ID && publicRuntimeConfig.CONTENTFUL_ACCESS_TOKEN) {
-    client = createClient({
-      space: publicRuntimeConfig.CONTENTFUL_SPACE_ID,
-      accessToken: publicRuntimeConfig.CONTENTFUL_ACCESS_TOKEN,
-    });
-  }
+// Only log in development
+if (process.env.NODE_ENV === 'development') {
+    console.log("Space ID:", process.env.CONTENTFUL_SPACE_ID);
+    console.log("Access Token:", process.env.CONTENTFUL_ACCESS_TOKEN);
+}
 
-  if (publicRuntimeConfig.CONTENTFUL_SPACE_ID && publicRuntimeConfig.CONTENTFUL_PREVIEW_ACCESS_TOKEN) {
-    previewClient = createClient({
-      space: publicRuntimeConfig.CONTENTFUL_SPACE_ID,
-      accessToken: publicRuntimeConfig.CONTENTFUL_PREVIEW_ACCESS_TOKEN,
-      host: 'preview.contentful.com',
-    });
-  }
+try {
+    if (typeof window !== 'undefined' || (process.env.CONTENTFUL_SPACE_ID && process.env.CONTENTFUL_ACCESS_TOKEN)) {
+        client = createClient({
+            space: process.env.CONTENTFUL_SPACE_ID,
+            accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+        });
+    }
+
+    if (typeof window !== 'undefined' || (process.env.CONTENTFUL_SPACE_ID && process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN)) {
+        previewClient = createClient({
+            space: process.env.CONTENTFUL_SPACE_ID,
+            accessToken: process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN,
+            host: 'preview.contentful.com',
+        });
+    }
 } catch (error) {
-  console.error('Failed to initialize Contentful client:', error);
+    console.error('Failed to initialize Contentful client:', error);
 }
 
 export { client, previewClient };

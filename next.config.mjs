@@ -9,17 +9,11 @@ const nextConfig = {
             'dev.to', // Allow dev.to itself
         ],
     },
-    // Server-side only environment variables
-    serverRuntimeConfig: {
-        CONTENTFUL_MANAGEMENT_TOKEN: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
-        NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    },
-    // Client-side exposed environment variables
-    publicRuntimeConfig: {
+    env: {
         CONTENTFUL_SPACE_ID: process.env.CONTENTFUL_SPACE_ID,
         CONTENTFUL_ACCESS_TOKEN: process.env.CONTENTFUL_ACCESS_TOKEN,
         CONTENTFUL_PREVIEW_ACCESS_TOKEN: process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN,
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+        CONTENTFUL_MANAGEMENT_TOKEN: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
     },
 };
 
