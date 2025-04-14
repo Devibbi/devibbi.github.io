@@ -11,10 +11,10 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 try {
-    if (typeof window !== 'undefined' || (process.env.CONTENTFUL_SPACE_ID && process.env.CONTENTFUL_ACCESS_TOKEN)) {
+    if (typeof window !== 'undefined' || (process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID && process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN)) {
         client = createClient({
-            space: process.env.CONTENTFUL_SPACE_ID,
-            accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+            space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+            accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
         });
     }
 
