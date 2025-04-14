@@ -1,13 +1,13 @@
-import { getServerSession, NextResponse } from 'next-auth';
-import { createClient } from 'contentful';
+import { getServerSession } from 'next-auth';
+import { NextResponse } from 'next/server';
+import { createClient } from 'contentful-management';
 
 const getContentfulClient = () => {
-  if (!process.env.CONTENTFUL_SPACE_ID || !process.env.CONTENTFUL_ACCESS_TOKEN) {
-    throw new Error('Contentful environment variables not configured');
+  if (!process.env.CONTENTFUL_MANAGEMENT_TOKEN) {
+    throw new Error('Contentful Management Token not configured');
   }
   return createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
+    accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN
   });
 };
 
@@ -21,7 +21,7 @@ export async function GET(request) {
     }
 
     const contentfulClient = getContentfulClient();
-    const space = await contentfulClient.getSpace();
+    const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
     const environment = await space.getEnvironment('master');
 
     // Find client entry
@@ -77,7 +77,7 @@ export async function POST(request) {
       );
     }
 
-    const space = await contentfulClient.getSpace();
+    const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
     const environment = await space.getEnvironment('master');
     
     // Find client entry

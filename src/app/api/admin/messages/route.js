@@ -1,34 +1,37 @@
 import { NextResponse } from 'next/server';
-import { createClient } from 'contentful';
+import { createClient } from 'contentful-management';
 import { cookies } from 'next/headers';
 
-// Initialize Contentful client with error handling
+// Initialize Contentful Management API client
 const getContentfulClient = () => {
-  if (!process.env.CONTENTFUL_SPACE_ID || !process.env.CONTENTFUL_ACCESS_TOKEN) {
-    throw new Error('Contentful environment variables not configured');
+  if (!process.env.CONTENTFUL_MANAGEMENT_TOKEN) {
+    throw new Error('Contentful Management Token not configured');
   }
   return createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
+    accessToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN
   });
 };
 
 // Middleware to check admin authentication
 async function checkAdminAuth(request) {
-  const cookieStore = cookies();
-  const adminSession = await cookieStore.get('admin_session');
-  const accessToken = request.headers.get('Authorization')?.split(' ')[1];  // Extract token from Authorization header
-
-  if (!adminSession || adminSession.value !== 'true' || !accessToken) {
+  try {
+    const cookieStore = await cookies(request);
+    const adminSession = await cookieStore.get('admin_session');
+    
+    console.log('Auth check - adminSession:', adminSession?.value);
+    
+    if (!adminSession?.value || adminSession.value !== 'true') {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Auth check error:', error);
     return false;
   }
-
-  // You can add more validation here for the access token, if needed
-  return true;
 }
 
 async function checkEnvVars() {
-  const requiredEnvVars = ['CONTENTFUL_SPACE_ID', 'CONTENTFUL_ACCESS_TOKEN'];
+  const requiredEnvVars = ['CONTENTFUL_SPACE_ID', 'CONTENTFUL_MANAGEMENT_TOKEN'];
   const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
   
   if (missingVars.length > 0) {
@@ -43,18 +46,28 @@ async function checkEnvVars() {
 // Get all client messages
 export async function GET(request) {
   try {
+    // Verify admin authentication
+    const isAuthenticated = await checkAdminAuth(request);
+    if (!isAuthenticated) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Initialize Contentful client
     const contentfulClient = getContentfulClient();
     const envError = await checkEnvVars();
     if (envError) return envError;
 
     try {
-      const space = await contentfulClient.getSpace();
+      const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
       const environment = await space.getEnvironment('master');
       
       // Get all client message entries
       const entries = await environment.getEntries({
         content_type: 'clientMessage',
-        order: '-fields.createdAt',
+        order: '-sys.createdAt',
         include: 2, // Include linked entries (clients)
       });
       
@@ -100,7 +113,7 @@ export async function GET(request) {
           id: entry.sys.id,
           subject: entry.fields.subject?.['en-US'] || '',
           message: entry.fields.message?.['en-US'] || '',
-          createdAt: entry.fields.createdAt?.['en-US'] || '',
+          createdAt: entry.sys.createdAt,
           read: entry.fields.read?.['en-US'] || false,
           client: clientData,
         };
@@ -148,8 +161,9 @@ export async function GET(request) {
       return NextResponse.json({ message: 'Error fetching messages' }, { status: 500 });
     }
   } catch (error) {
+    console.error('Error:', error);
     return NextResponse.json(
-      { error: error.message || 'Contentful configuration error' },
+      { error: error.message },
       { status: 500 }
     );
   }
@@ -158,6 +172,7 @@ export async function GET(request) {
 // Mark a message as read
 export async function PATCH(request) {
   try {
+    // Initialize Contentful client
     const contentfulClient = getContentfulClient();
     const envError = await checkEnvVars();
     if (envError) return envError;
@@ -175,7 +190,7 @@ export async function PATCH(request) {
         return NextResponse.json({ message: 'Message ID is required' }, { status: 400 });
       }
       
-      const space = await contentfulClient.getSpace();
+      const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
       const environment = await space.getEnvironment('master');
       
       // Get the message entry
@@ -212,8 +227,9 @@ export async function PATCH(request) {
       return NextResponse.json({ message: 'Error updating message' }, { status: 500 });
     }
   } catch (error) {
+    console.error('Error:', error);
     return NextResponse.json(
-      { error: error.message || 'Contentful configuration error' },
+      { error: error.message },
       { status: 500 }
     );
   }
@@ -222,6 +238,7 @@ export async function PATCH(request) {
 // Send a response to a client
 export async function POST(request) {
   try {
+    // Initialize Contentful client
     const contentfulClient = getContentfulClient();
     const envError = await checkEnvVars();
     if (envError) return envError;
@@ -239,7 +256,7 @@ export async function POST(request) {
         return NextResponse.json({ message: 'Client ID, subject, and message are required' }, { status: 400 });
       }
       
-      const space = await contentfulClient.getSpace();
+      const space = await contentfulClient.getSpace(process.env.CONTENTFUL_SPACE_ID);
       const environment = await space.getEnvironment('master');
       
       // Create a new admin response entry
@@ -269,14 +286,35 @@ export async function POST(request) {
       // Publish the entry
       await entry.publish();
       
+      // Create a new client message entry
+      const newMessage = await environment.createEntry('clientMessage', {
+        fields: {
+          client: {
+            'en-US': {
+              sys: {
+                type: 'Link',
+                linkType: 'Entry',
+                id: clientId
+              }
+            }
+          },
+          message: { 'en-US': message },
+          isAdminResponse: { 'en-US': true },
+          createdAt: { 'en-US': new Date().toISOString() }
+        }
+      });
+
+      await newMessage.publish();
+      
       return NextResponse.json({ success: true, responseId: entry.sys.id });
     } catch (error) {
       console.error('Error sending response:', error);
       return NextResponse.json({ message: 'Error sending response' }, { status: 500 });
     }
   } catch (error) {
+    console.error('Error:', error);
     return NextResponse.json(
-      { error: error.message || 'Contentful configuration error' },
+      { error: error.message },
       { status: 500 }
     );
   }

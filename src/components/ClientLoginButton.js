@@ -4,6 +4,15 @@ import React from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { UserCheck, LogIn } from 'lucide-react';
+import { Github } from 'lucide-react';
+import { FaReddit } from 'react-icons/fa';
+import { FcGoogle } from 'react-icons/fc';
+
+const providers = {
+  github: { name: 'GitHub', color: 'bg-gray-800', icon: <Github className="w-5 h-5" /> },
+  google: { name: 'Google', color: 'bg-red-600', icon: <FcGoogle className="w-5 h-5" /> },
+  reddit: { name: 'Reddit', color: 'bg-orange-500', icon: <FaReddit className="w-5 h-5 text-white" /> }
+};
 
 const ClientLoginButton = () => {
   const { data: session, status } = useSession();

@@ -1,11 +1,16 @@
 "use client";
 
 import React from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 const LoginPage = () => {
+  const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
+
   const handleLogin = (provider) => {
     signIn(provider, { callbackUrl: '/client/dashboard' });
   };
@@ -24,6 +29,12 @@ const LoginPage = () => {
           <h1 className="text-3xl font-bold mb-2">Become a Client</h1>
           <p className="text-white/70">Sign in to send me messages and discuss your project</p>
         </div>
+        
+        {error && (
+          <div className="error-message mb-4">
+            Login failed: {error}
+          </div>
+        )}
         
         <div className="space-y-4">
           <button

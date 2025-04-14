@@ -15,6 +15,7 @@ const AdminDashboard = () => {
   const [currentMessage, setCurrentMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [tempMessages, setTempMessages] = useState([]);
+  const [isRateLimited, setIsRateLimited] = useState(false);
   const router = useRouter();
   const messagesEndRef = useRef(null);
   const pollingIntervalRef = useRef(null);
@@ -27,30 +28,35 @@ const AdminDashboard = () => {
   // Fetch clients and messages
   const fetchData = useCallback(async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/admin/messages', {
         credentials: 'include'
       });
-      
-      if (response.status === 401) {
-        router.push('/admin/login');
-        return;
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
       }
 
-      const data = await response.json();
-      setMessages(data.messages || []);
+      const { messages, clients } = await response.json();
       
-      // If no clients array, extract from messages
-      const clientsData = data.clients?.length > 0 
-        ? data.clients 
-        : [...new Map(data.messages.map(m => [m.client?.id, m.client])).values()];
-      
-      setClients(clientsData.filter(c => c));
-    } catch (error) {
-      console.error('Error:', error);
+      if (!Array.isArray(messages) || !Array.isArray(clients)) {
+        throw new Error('Invalid data format from API');
+      }
+
+      setMessages(messages);
+      setClients(clients);
+      setError('');
+      setIsRateLimited(false);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setError(err.message);
+      if (err.message.includes('429')) {
+        setIsRateLimited(true);
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   // Mark message as read
   const markAsRead = async (messageId, isRead = true) => {
@@ -133,6 +139,9 @@ const AdminDashboard = () => {
     } catch (error) {
       setError('Error sending message. Please try again.');
       console.error('Send error:', error);
+      if (error.message.includes('429')) {
+        setIsRateLimited(true);
+      }
     } finally {
       setSending(false);
     }
@@ -287,6 +296,11 @@ const AdminDashboard = () => {
         
         {/* Chat area */}
         <div className="w-full md:w-2/3 bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+          {isRateLimited && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
+              <p>Too many requests. Please wait a few seconds before trying again.</p>
+            </div>
+          )}
           {selectedClient ? (
             <>
               {/* Client header */}
@@ -325,6 +339,9 @@ const AdminDashboard = () => {
                             ? 'bg-blue-600 text-white rounded-tr-none' 
                             : 'bg-gray-100 text-gray-800 rounded-tl-none'}`}
                         >
+                          <div className="font-semibold text-xs mb-1">
+                            {msg.isAdminResponse || msg.isTemporary ? 'You' : msg.client?.name || 'Client'}
+                          </div>
                           <p className="whitespace-pre-wrap break-words">{msg.message}</p>
                           <div className={`text-xs mt-1 ${msg.isAdminResponse || msg.isTemporary ? 'text-blue-200' : 'text-gray-500'} text-right`}>
                             {formatDate(msg.createdAt)}

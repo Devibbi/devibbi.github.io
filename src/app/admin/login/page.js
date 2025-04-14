@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 const AdminLoginPage = () => {
   const [username, setUsername] = useState('');
@@ -13,25 +13,24 @@ const AdminLoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
     
     try {
       const response = await fetch('/api/admin/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
+        credentials: 'include'
       });
       
-      const data = await response.json();
-      
-      if (response.ok) {
-        router.push('/admin/dashboard');
-      } else {
-        setError(data.error || 'Invalid credentials');
+      if (!response.ok) {
+        throw new Error('Login failed');
       }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
+      
+      router.push('/admin/dashboard');
+    } catch (err) {
+      setError('Invalid credentials');
+      console.error('Login error:', err);
     }
   };
 

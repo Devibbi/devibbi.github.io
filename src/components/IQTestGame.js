@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
 import { saveIQQuizScore, getIQQuizHighScores, getLastPlayerName } from '../utils/iqQuizUtils';
 import { getIQQuizHighScores as getContentfulHighScores } from '../utils/contentfulQueries';
 import ShareResults from './ShareResults';
