@@ -43,6 +43,8 @@ async function checkEnvVars() {
   return null;
 }
 
+export const dynamic = 'force-dynamic';
+
 // Get all client messages
 export async function GET(request) {
   try {
