@@ -5,7 +5,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-
+import { Suspense } from 'react';
 const LoginPage = () => {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
@@ -29,13 +29,14 @@ const LoginPage = () => {
           <h1 className="text-3xl font-bold mb-2">Become a Client</h1>
           <p className="text-white/70">Sign in to send me messages and discuss your project</p>
         </div>
-        
+        <Suspense fallback={<div>Loading...</div>}>
+
         {error && (
           <div className="error-message mb-4">
             Login failed: {error}
           </div>
         )}
-        
+        </Suspense>
         <div className="space-y-4">
           <button
             onClick={() => handleLogin('github')}

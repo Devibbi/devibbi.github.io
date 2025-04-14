@@ -1,0 +1,16 @@
+[build]
+  command = "next build"
+  publish = ".next"
+  functions = "functions"
+
+[build.environment]
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Remove or comment out this redirect as it interferes with Next.js routing
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
