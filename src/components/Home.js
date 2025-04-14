@@ -22,6 +22,7 @@ const HomePage = () => {
     }, []); // Empty dependency array ensures this runs only once
 
     const { name, title, profileImage, socialLinks = {} } = personalInfo?.fields || {};
+    console.log('Profile Image URL:', profileImage);
 
     // Debug log to check social links data
     console.log('Social Links Data:', socialLinks);
@@ -85,7 +86,7 @@ const HomePage = () => {
                         <span className="text-shadow-glow">Test Your IQ</span>
                     </button>
                 </div>
-                
+
                 {/* Client Login Button */}
                 <div className="animate-float animation-delay-500">
                     <ClientLoginButton />
