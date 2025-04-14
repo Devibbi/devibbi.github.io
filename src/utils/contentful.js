@@ -6,8 +6,8 @@ let previewClient = null;
 
 // Only log in development
 if (process.env.NODE_ENV === 'development') {
-    console.log("Space ID:", process.env.CONTENTFUL_SPACE_ID);
-    console.log("Access Token:", process.env.CONTENTFUL_ACCESS_TOKEN);
+    console.log("Space ID:", process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID);
+    console.log("Access Token:", process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN);
 }
 
 try {
