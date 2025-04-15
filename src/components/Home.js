@@ -21,11 +21,20 @@ const HomePage = () => {
         fetchPersonalInfo();
     }, []); // Empty dependency array ensures this runs only once
 
-    const { name, title, profileImage, socialLinks = {} } = personalInfo?.fields || {};
-    console.log('Profile Image URL:', profileImage);
+    // Defensive extraction with fallback
+    const { name = '', title = '', profileImage = null, socialLinks = {} } = personalInfo?.fields || {};
+    // Fallback profile image
+    const fallbackProfileImage = 'https://www.gravatar.com/avatar/?d=mp&f=y';
+    const profileImageUrl = profileImage?.fields?.file?.url
+        ? (profileImage.fields.file.url.startsWith('http') ? profileImage.fields.file.url : `https:${profileImage.fields.file.url}`)
+        : fallbackProfileImage;
 
-    // Debug log to check social links data
-    console.log('Social Links Data:', socialLinks);
+    // Defensive: Ensure socialLinks is an object
+    const validSocialLinks = socialLinks && typeof socialLinks === 'object' ? socialLinks : {};
+    
+    // Debug logs
+    console.log('Profile Image URL:', profileImageUrl);
+    console.log('Social Links Data:', validSocialLinks);
 
     if (!personalInfo) {
         return <div>Loading...</div>;
@@ -40,16 +49,14 @@ const HomePage = () => {
                 <div className="flex flex-col items-center text-center relative z-10">
                     {/* Profile Image */}
                     <div className="relative w-48 h-48 md:w-64 md:h-64 mb-8">
-                        {profileImage && (
-                            <Image
-                                src={`https:${profileImage.fields.file.url}`}
-                                alt={name || 'Profile'}
-                                fill
-                                sizes="(max-width: 768px) 192px, 256px"
-                                className="rounded-full shadow-2xl border-4 border-white object-cover"
-                                priority
-                            />
-                        )}
+                        <Image
+                            src={profileImageUrl}
+                            alt={name || 'Profile'}
+                            fill
+                            sizes="(max-width: 768px) 192px, 256px"
+                            className="rounded-full shadow-2xl border-4 border-white object-cover"
+                            priority
+                        />
                     </div>
 
                     {/* Name */}
@@ -64,10 +71,14 @@ const HomePage = () => {
 
                     {/* Social links below title - no background */}
                     <div className="mb-10">
-                        <SocialLinks
-                            socialLinks={socialLinks}
-                            className="flex items-center justify-center gap-6"
-                        />
+                        {Object.keys(validSocialLinks).length > 0 ? (
+                            <SocialLinks
+                                socialLinks={validSocialLinks}
+                                className="flex items-center justify-center gap-6"
+                            />
+                        ) : (
+                            <div className="text-gray-400 text-sm">No social links available</div>
+                        )}
                     </div>
                 </div>
             </section>

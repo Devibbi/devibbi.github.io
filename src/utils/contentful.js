@@ -1,39 +1,61 @@
 import { createClient } from 'contentful';
 
-// Create the client only if we're in a browser OR if the required environment variables are available
+// Helper to get env vars safely
+function getEnvVar(key) {
+    if (typeof process !== 'undefined' && process.env && process.env[key]) {
+        return process.env[key];
+    }
+    return undefined;
+}
+
+// Defensive: Check for Contentful credentials
+const spaceId = getEnvVar('NEXT_PUBLIC_CONTENTFUL_SPACE_ID');
+const accessToken = getEnvVar('NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN');
+const previewSpaceId = getEnvVar('CONTENTFUL_SPACE_ID');
+const previewAccessToken = getEnvVar('CONTENTFUL_PREVIEW_ACCESS_TOKEN');
+
 let client = null;
 let previewClient = null;
 
-// Only log in development
-if (process.env.NODE_ENV === 'development') {
-    console.log("Space ID:", process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID);
-    console.log("Access Token:", process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN);
+if (!spaceId || !accessToken) {
+    if (typeof window !== 'undefined') {
+        // Client-side: show user-friendly message
+        alert('Contentful credentials missing! Please set NEXT_PUBLIC_CONTENTFUL_SPACE_ID and NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN in your environment.');
+    } else {
+        // Server-side: log error
+        console.error('Missing Contentful credentials: NEXT_PUBLIC_CONTENTFUL_SPACE_ID and/or NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN');
+    }
+} else {
+    try {
+        client = createClient({
+            space: spaceId,
+            accessToken: accessToken,
+        });
+    } catch (error) {
+        console.error('Failed to initialize Contentful client:', error);
+    }
 }
 
-try {
-    if (typeof window !== 'undefined' || (process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID && process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN)) {
-        client = createClient({
-            space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-            accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
-        });
-    }
-
-    if (typeof window !== 'undefined' || (process.env.CONTENTFUL_SPACE_ID && process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN)) {
+if (previewSpaceId && previewAccessToken) {
+    try {
         previewClient = createClient({
-            space: process.env.CONTENTFUL_SPACE_ID,
-            accessToken: process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN,
+            space: previewSpaceId,
+            accessToken: previewAccessToken,
             host: 'preview.contentful.com',
         });
+    } catch (error) {
+        console.error('Failed to initialize Contentful preview client:', error);
     }
-} catch (error) {
-    console.error('Failed to initialize Contentful client:', error);
 }
 
-export { client, previewClient };
-
-// Safely call Contentful
+// Defensive fetchEntries
 export const fetchEntries = async (params) => {
-    if (!client) return { items: [] };
+    if (!client) {
+        if (typeof window !== 'undefined') {
+            alert('Contentful client not initialized. Content may not load.');
+        }
+        return { items: [] };
+    }
     try {
         return await client.getEntries(params);
     } catch (error) {
@@ -42,32 +64,36 @@ export const fetchEntries = async (params) => {
     }
 };
 
-// Fetch Blog Posts
+// Defensive fetch functions
 export const fetchBlogPosts = async () => {
-    const response = await client.getEntries({ content_type: 'blogPost' });
-    return response.items;
+    const response = await fetchEntries({ content_type: 'blogPost' });
+    return response.items || [];
 };
 
-// Fetch Skills
 export const fetchSkills = async () => {
-    const response = await client.getEntries({ content_type: 'skill' });
-    return response.items;
+    const response = await fetchEntries({ content_type: 'skill' });
+    return response.items || [];
 };
 
-// Fetch Home Page Content
+export const fetchNavbarLinks = async () => {
+    const response = await fetchEntries({ content_type: 'navbarLink' });
+    return response.items || [];
+};
+
+export const fetchContactForm = async () => {
+    if (!client) return [];
+    try {
+        const response = await client.getEntries({ content_type: 'contactForm' });
+        return response.items || [];
+    } catch (error) {
+        console.error('Error fetching contact form:', error);
+        return [];
+    }
+};
+
 export const fetchHomePage = async () => {
     const response = await fetchEntries({ content_type: 'homePage' });
-    return response.items[0]; // Assuming only one home page entry
+    return response.items ? response.items[0] : null;
 };
 
-// Fetch Contact Form
-export const fetchContactForm = async () => {
-    const response = await client.getEntries({ content_type: 'contactForm' });
-    return response.items;
-};
-
-// Fetch Navbar Links
-export const fetchNavbarLinks = async () => {
-    const response = await client.getEntries({ content_type: 'navbarLink' });
-    return response.items;
-};
+export { client, previewClient };

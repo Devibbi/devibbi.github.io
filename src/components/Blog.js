@@ -13,6 +13,9 @@ const Blog = async () => {
     // Fallback image when needed
     const fallbackImageUrl = 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80';
 
+    // Defensive: Ensure blogPosts is always an array
+    const safeBlogPosts = Array.isArray(blogPosts) ? blogPosts : [];
+
     return (
         <section id="blog" className="min-h-screen relative py-20 overflow-hidden">
             {/* Animated Background */}
@@ -36,21 +39,15 @@ const Blog = async () => {
                     </p>
                 </div>
 
-                {blogPosts && blogPosts.length > 0 ? (
+                {safeBlogPosts.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {blogPosts.map((post, index) => {
-                            // Get image URL safely
-                            let imageUrl;
-                            try {
-                                if (post.fields.featuredImage?.fields?.file?.url) {
-                                    imageUrl = `https:${post.fields.featuredImage.fields.file.url}`;
-                                } else {
-                                    imageUrl = fallbackImageUrl;
-                                }
-                            } catch (error) {
-                                console.error('Error getting image URL', error);
-                                imageUrl = fallbackImageUrl;
-                            }
+                        {safeBlogPosts.map((post, index) => {
+                            // Defensive: Fallback for image
+                            const imageUrl = post?.fields?.featuredImage?.fields?.file?.url
+                                ? (post.fields.featuredImage.fields.file.url.startsWith('http')
+                                    ? post.fields.featuredImage.fields.file.url
+                                    : `https:${post.fields.featuredImage.fields.file.url}`)
+                                : fallbackImageUrl;
 
                             // Determine if this is an external blog post
                             const isExternalPost = !!post.fields.externalUrl;
@@ -154,10 +151,7 @@ const Blog = async () => {
                         })}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg dark:bg-gray-700">
-                        <p className="text-xl text-gray-600 dark:text-gray-300 font-medium">No blog posts found. Check back soon!</p>
-                        <p className="text-gray-500 dark:text-gray-400 mt-2">I'm working on some exciting content to share with you.</p>
-                    </div>
+                    <div className="text-gray-400 text-sm">No blog posts available.</div>
                 )}
             </div>
         </section>

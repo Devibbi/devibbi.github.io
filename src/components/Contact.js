@@ -51,6 +51,21 @@ const Contact = () => {
         }
     };
 
+    // Defensive: fallback for missing contact info
+    const safeContactInfo = contactInfo && typeof contactInfo === 'object' ? contactInfo : {};
+
+    if (!contactInfo) {
+        return (
+            <div className="flex justify-center items-center min-h-[200px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            </div>
+        );
+    }
+
+    if (Object.keys(safeContactInfo).length === 0) {
+        return <div className="text-gray-400 text-sm text-center py-8">No contact information available.</div>;
+    }
+
     return (
         <section id="contact" className="relative min-h-screen py-20 bg-lightblue-50 dark:bg-gradient-to-b dark:from-gray-600 dark:to-gray-500 overflow-hidden">
             {/* Animated Background */}
@@ -173,13 +188,13 @@ const Contact = () => {
                 </form>
 
                 {/* Social Links */}
-                {contactInfo && (
+                {safeContactInfo && (
                     <div className="mt-16 text-center animate-fadeIn" style={{ animationDelay: "200ms" }}>
                         <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-teal-600 dark:from-green-500 dark:to-blue-300 mb-6">
                             Connect with Me
                         </h3>
                         <div className="flex justify-center space-x-6">
-                            <SocialLinks socialLinks={contactInfo.socialLinks} />
+                            <SocialLinks socialLinks={safeContactInfo.socialLinks} />
                         </div>
                     </div>
                 )}

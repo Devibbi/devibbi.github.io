@@ -15,9 +15,10 @@ const Skills = () => {
         const fetchSkills = async () => {
             try {
                 const skills = await getAllSkills();
-                setSkillsData(skills);
+                setSkillsData(Array.isArray(skills) ? skills : []);
             } catch (error) {
                 console.error("Error fetching skills:", error);
+                setSkillsData([]);
             } finally {
                 setLoading(false);
             }
@@ -28,10 +29,14 @@ const Skills = () => {
 
     if (loading) {
         return (
-            <section id="skills" className="min-h-screen relative overflow-hidden py-20 bg-white dark:bg-gray-900 flex items-center justify-center">
-                <div className="text-2xl text-indigo-600 dark:text-indigo-400 animate-pulse">Loading skills...</div>
-            </section>
+            <div className="flex justify-center items-center min-h-[300px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            </div>
         );
+    }
+
+    if (!skillsData || skillsData.length === 0) {
+        return <div className="text-gray-400 text-sm text-center py-8">No skills data available.</div>;
     }
 
     return (
