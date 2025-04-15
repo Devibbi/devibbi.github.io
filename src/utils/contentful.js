@@ -9,8 +9,8 @@ function getEnvVar(key) {
 }
 
 // Defensive: Check for Contentful credentials
-const spaceId = getEnvVar('NEXT_PUBLIC_CONTENTFUL_SPACE_ID');
-const accessToken = getEnvVar('NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN');
+const spaceId = getEnvVar('CONTENTFUL_SPACE_ID');
+const accessToken = getEnvVar('CONTENTFUL_ACCESS_TOKEN');
 const previewSpaceId = getEnvVar('CONTENTFUL_SPACE_ID');
 const previewAccessToken = getEnvVar('CONTENTFUL_PREVIEW_ACCESS_TOKEN');
 
