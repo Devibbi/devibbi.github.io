@@ -11,27 +11,36 @@ import '../globals.css';
 const HomePage = () => {
     const [showIQTest, setShowIQTest] = useState(false);
     const [personalInfo, setPersonalInfo] = useState(null);
+    const [contactInfo, setContactInfo] = useState(null);
 
     useEffect(() => {
-        const fetchPersonalInfo = async () => {
+        const fetchInfos = async () => {
             const info = await getPersonalInfo();
             setPersonalInfo(info);
+            // Try to get contactInfo for fallback
+            try {
+                const contact = await import('../utils/contentfulQueries').then(m => m.getContactInfo());
+                setContactInfo(contact);
+            } catch (e) {
+                setContactInfo(null);
+            }
         };
-
-        fetchPersonalInfo();
-    }, []); // Empty dependency array ensures this runs only once
+        fetchInfos();
+    }, []);
 
     // Defensive extraction with fallback
-    const { name = '', title = '', profileImage = null, socialLinks = {} } = personalInfo?.fields || {};
+    const { name = '', title = '', profileImage = null, socialLinks: personalLinks = {} } = personalInfo?.fields || {};
+    const { socialLinks: contactLinks = {} } = contactInfo?.fields || {};
+    // Fallback: use contactLinks if personalLinks is empty
+    const validSocialLinks = (personalLinks && Object.keys(personalLinks).length > 0)
+        ? personalLinks
+        : (contactLinks && typeof contactLinks === 'object' ? contactLinks : {});
     // Fallback profile image
     const fallbackProfileImage = 'https://www.gravatar.com/avatar/?d=mp&f=y';
     const profileImageUrl = profileImage?.fields?.file?.url
         ? (profileImage.fields.file.url.startsWith('http') ? profileImage.fields.file.url : `https:${profileImage.fields.file.url}`)
         : fallbackProfileImage;
 
-    // Defensive: Ensure socialLinks is an object
-    const validSocialLinks = socialLinks && typeof socialLinks === 'object' ? socialLinks : {};
-    
     // Debug logs
     console.log('Profile Image URL:', profileImageUrl);
     console.log('Social Links Data:', validSocialLinks);
