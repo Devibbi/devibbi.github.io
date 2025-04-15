@@ -1,59 +1,36 @@
 import { createClient } from 'contentful';
 
-// Helper to get env vars safely
-function getEnvVar(key) {
-    if (typeof process !== 'undefined' && process.env && process.env[key]) {
-        return process.env[key];
-    }
-    return undefined;
-}
-
-// Defensive: Check for Contentful credentials
-const spaceId = getEnvVar('NEXT_PUBLIC_CONTENTFUL_SPACE_ID');
-const accessToken = getEnvVar('NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN');
-const previewSpaceId = getEnvVar('CONTENTFUL_SPACE_ID');
-const previewAccessToken = getEnvVar('CONTENTFUL_PREVIEW_ACCESS_TOKEN');
+// HARDCODED Contentful credentials (for emergency/debug use only)
+const spaceId = 'poefg0mw3yxo';
+const accessToken = 'SjAJFjD_cYCu8cYRdX9XiwkSB2mnjvbuk1F767Ataow';
+const previewSpaceId = 'poefg0mw3yxo';
+const previewAccessToken = 'CBoLFqKoepbqPp_UfJWMPjnwhSyXGgytQtThU5heqf4';
 
 let client = null;
 let previewClient = null;
 
-if (!spaceId || !accessToken) {
-    if (typeof window !== 'undefined') {
-        // Client-side: show user-friendly message
-        alert('Contentful credentials missing! Please set NEXT_PUBLIC_CONTENTFUL_SPACE_ID and NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN in your environment.');
-    } else {
-        // Server-side: log error
-        console.error('Missing Contentful credentials: NEXT_PUBLIC_CONTENTFUL_SPACE_ID and/or NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN');
-    }
-} else {
-    try {
-        client = createClient({
-            space: spaceId,
-            accessToken: accessToken,
-        });
-    } catch (error) {
-        console.error('Failed to initialize Contentful client:', error);
-    }
+try {
+    client = createClient({
+        space: spaceId,
+        accessToken: accessToken,
+    });
+} catch (error) {
+    console.error('Failed to initialize Contentful client:', error);
 }
 
-if (previewSpaceId && previewAccessToken) {
-    try {
-        previewClient = createClient({
-            space: previewSpaceId,
-            accessToken: previewAccessToken,
-            host: 'preview.contentful.com',
-        });
-    } catch (error) {
-        console.error('Failed to initialize Contentful preview client:', error);
-    }
+try {
+    previewClient = createClient({
+        space: previewSpaceId,
+        accessToken: previewAccessToken,
+        host: 'preview.contentful.com',
+    });
+} catch (error) {
+    console.error('Failed to initialize Contentful preview client:', error);
 }
 
 // Defensive fetchEntries
 export const fetchEntries = async (params) => {
     if (!client) {
-        if (typeof window !== 'undefined') {
-            alert('Contentful client not initialized. Content may not load.');
-        }
         return { items: [] };
     }
     try {
