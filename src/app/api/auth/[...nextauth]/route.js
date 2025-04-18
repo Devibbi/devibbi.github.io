@@ -15,8 +15,8 @@ const authOptions = {
       clientSecret: process.env.GH_CLIENT_SECRET,
     }),
     RedditProvider({
-      clientId: process.env.REDDIT_ID,
-      clientSecret: process.env.REDDIT_SECRET,
+      clientId: process.env.REDDIT_CLIENT_ID,
+      clientSecret: process.env.REDDIT_CLIENT_SECRET,
       authorization: {
         params: {
           duration: 'permanent'
