@@ -2,14 +2,16 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Send, LogOut, User, MessageSquare, Clock, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import AskBbiWidget from '../../../components/AskBbiWidget.js';
 
 const ClientDashboard = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
@@ -175,22 +177,26 @@ const ClientDashboard = () => {
       {/* Header */}
       <header className="bg-black/20 backdrop-blur-md p-4 shadow-lg">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="text-white/80 hover:text-white transition-colors">
-              <ArrowLeft className="w-5 h-5" />
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-white hover:text-purple-300 font-bold text-xl flex items-center gap-2">
+              <ArrowLeft className="w-5 h-5" /> Home
             </Link>
-            <h1 className="text-2xl font-bold">Messages</h1>
+            <span className="ml-4 text-lg font-bold">Client Dashboard</span>
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className="flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+            onClick={() => signOut({ callbackUrl: '/client/login' })}
+            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg flex items-center gap-2 text-white font-medium"
           >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
+            <LogOut className="w-5 h-5" /> Logout
           </button>
         </div>
       </header>
-      
+      {/* AskBbi Bot Widget (hidden on login page) */}
+      {pathname !== '/client/login' && (
+        <div className="fixed bottom-8 right-8 z-40">
+          <AskBbiWidget />
+        </div>
+      )}
       {/* Main content */}
       <div className="flex-grow flex flex-col max-w-4xl mx-auto w-full p-4">
         {/* User info */}
