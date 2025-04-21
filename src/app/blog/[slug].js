@@ -1,35 +1,35 @@
 import React from 'react';
 import { getBlogPostBySlug } from '../../utils/contentfulQueries';
-import Image from 'next/image';
-const BlogPost = ({ post }) => {
-    if (!post) {
-        return <div>Post not found</div>;
-    }
+import PostDetail from '../../components/PostDetail';
 
-    return (
-        <article className="prose mx-auto p-6">
-            <h1 className="text-4xl font-bold">{post.title}</h1>
-            <Image 
-              src={post.featuredImage} 
-              alt={post.title} 
-              width={800} 
-              height={450} 
-              className="w-full h-auto rounded-lg" 
-              unoptimized={true}
-            />
-            <p className="text-gray-600">{new Date(post.publishDate).toLocaleDateString()}</p>
-            <div className="mt-4" dangerouslySetInnerHTML={{ __html: post.content }} />
-        </article>
-    );
+const BlogPostPage = ({ post, debug }) => {
+    // Optional: Debug logging
+    if (typeof window !== 'undefined') {
+        console.log('Blog post data:', post);
+        console.log('Debug info:', debug);
+    }
+    return <PostDetail post={post} />;
 };
 
 export async function getServerSideProps({ params }) {
-    const post = await getBlogPostBySlug(params.slug);
+    let post = null;
+    let error = null;
+    try {
+        post = await getBlogPostBySlug(params.slug);
+    } catch (err) {
+        error = err.message || String(err);
+    }
     return {
         props: {
             post,
+            debug: {
+                slug: params.slug,
+                error,
+                postExists: !!post,
+                postRaw: post
+            }
         },
     };
 }
 
-export default BlogPost;
+export default BlogPostPage;

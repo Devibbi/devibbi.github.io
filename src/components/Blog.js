@@ -16,6 +16,23 @@ const Blog = async () => {
     // Defensive: Ensure blogPosts is always an array
     const safeBlogPosts = Array.isArray(blogPosts) ? blogPosts : [];
 
+    // Filter out posts with dev.to links in the externalUrl
+    // Also filter out duplicate slugs (show only the first occurrence)
+    const seenSlugs = new Set();
+    const filteredBlogPosts = safeBlogPosts.filter(post => {
+        const slug = post.fields?.slug || post.slug;
+        // If post has an externalUrl and it contains 'dev.to', exclude it
+        if (post.fields.externalUrl && post.fields.externalUrl.includes('dev.to')) {
+            return false;
+        }
+        // If we've already seen this slug, skip it (removes duplicates)
+        if (seenSlugs.has(slug)) {
+            return false;
+        }
+        seenSlugs.add(slug);
+        return true;
+    });
+
     return (
         <section id="blog" className="min-h-screen relative py-20 overflow-hidden">
             {/* Animated Background */}
@@ -39,9 +56,9 @@ const Blog = async () => {
                     </p>
                 </div>
 
-                {safeBlogPosts.length > 0 ? (
+                {filteredBlogPosts.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {safeBlogPosts.map((post, index) => {
+                        {filteredBlogPosts.map((post, index) => {
                             // Defensive: Fallback for image
                             const imageUrl = post?.fields?.featuredImage?.fields?.file?.url
                                 ? (post.fields.featuredImage.fields.file.url.startsWith('http')
