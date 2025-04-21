@@ -1,4 +1,6 @@
 import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
 const PostDetail = ({ post }) => {
@@ -7,7 +9,7 @@ const PostDetail = ({ post }) => {
             <div className="flex flex-col items-center justify-center min-h-screen text-center">
                 <h2 className="text-3xl font-bold text-red-600 mb-4">404 - Post Not Found</h2>
                 <p className="text-lg text-gray-500 mb-8">Sorry, the blog post you are looking for does not exist or has been removed.</p>
-                <a href="/" className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-md hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-medium">Go Back Home</a>
+                <Link href="/" className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-md hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-medium">Go Back Home</Link>
             </div>
         );
     }
@@ -35,7 +37,7 @@ const PostDetail = ({ post }) => {
                     {!title && <li>- <b>Title</b> is missing</li>}
                     {!content && <li>- <b>Content</b> is missing</li>}
                 </ul>
-                <a href="/" className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-md hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-medium">Go Back Home</a>
+                <Link href="/" className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-md hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-medium">Go Back Home</Link>
             </div>
         );
     }
@@ -44,7 +46,7 @@ const PostDetail = ({ post }) => {
         <article className="max-w-3xl mx-auto my-12 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in">
             {imageUrl && (
                 <div className="w-full h-72 relative mb-8 rounded-xl overflow-hidden shadow-md">
-                    <img src={imageUrl} alt={title} className="object-cover w-full h-full" />
+                    <Image src={imageUrl} alt={title} fill className="object-cover w-full h-full" />
                 </div>
             )}
             <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4 text-center">{title}</h1>
