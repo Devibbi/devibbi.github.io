@@ -4,6 +4,7 @@ import BinaryBackground from "../components/BinaryBackground";
 import Script from "next/script";
 import { Providers } from "./providers";
 import AskBbiWidget from '../components/AskBbiWidget';
+import ClientLayout from "./ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,7 +67,7 @@ export default function RootLayout({ children }) {
         </Script>
         <Providers>
           <BinaryBackground />
-          {children}
+          <ClientLayout>{children}</ClientLayout>
           <AskBbiWidget />
         </Providers>
       </body>
