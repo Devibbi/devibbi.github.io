@@ -12,6 +12,30 @@ export default function SplashScreen() {
   const [pause, setPause] = useState(false);
   const [fadeAndSlide, setFadeAndSlide] = useState(false);
   const [removeSplash, setRemoveSplash] = useState(false);
+  // Start with true by default to prevent flash
+  const [shouldHide, setShouldHide] = useState(false);
+
+  // Check if we should hide the splash screen
+  useEffect(() => {
+    // We want to show splash only on first visit or on refresh
+    const hasVisited = sessionStorage.getItem("hasVisitedBefore");
+    
+    // If we're navigating within the site (not a refresh and not first visit)
+    if (hasVisited && performance.navigation.type !== 1) {
+      // Hide splash immediately without animation
+      setShouldHide(true);
+    } else {
+      // Set session storage to indicate user has visited
+      sessionStorage.setItem("hasVisitedBefore", "true");
+      // Start the typing animation
+      startAnimation();
+    }
+  }, []);
+
+  // Function to start the animation sequence
+  const startAnimation = () => {
+    // Animation logic can be put here if needed
+  };
 
   // Typing effect
   useEffect(() => {
@@ -52,7 +76,8 @@ export default function SplashScreen() {
     return () => clearInterval(cursorBlink);
   }, []);
 
-  if (removeSplash) return null;
+  // Don't render if we've determined to hide it or if animated out
+  if (shouldHide || removeSplash) return null;
 
   return (
     <div
